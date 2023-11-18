@@ -1,0 +1,70 @@
+/*
+ *     Copyright 2023 Michael Sonst @ https://www.corporate-startup.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id 'java-library'  
+    id 'eclipse'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'commons-io:commons-io:2.15.0'
+    
+    implementation 'org.apache.logging.log4j:log4j-api:2.21.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.21.1'
+	implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.21.1'
+	
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+	testImplementation 'org.mockito:mockito-core:5.7.0'
+}
+
+version = '0.0.1-SNAPSHOT'
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+    }
+    test {
+        java {
+            srcDirs 'src/test/java'
+        }
+    }
+ }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.corporate-startup'
+            artifactId = 'downloader'
+            version = '0.0.1-SNAPSHOT'
+
+            from components.java
+        }
+    }
+}
