@@ -1,21 +1,17 @@
 /*
- *     Copyright 2023 Michael Sonst @ https://www.corporate-startup.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *          http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2023 Michael Sonst @ https://www.corporate-startup.com Licensed
+ * under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+ * applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+ * OF ANY KIND, either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 package com.cs.downloader;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -26,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Files;
@@ -38,7 +35,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Options;
@@ -46,236 +42,290 @@ import org.openqa.selenium.WebDriver.Options;
 import com.cs.downloader.event.DownloadStatusListener;
 import com.cs.downloader.event.PartProgressUpdateEvent;
 
+/**
+ * Tests for the ResumableDownload class.
+ */
 class ResumableDownloadTest {
-	private static final char[] TESTCONTENT = "0123456789".toCharArray();
-	private static final String COOKIE = "C11=\"v1\";$Path=\"some/path\"";
-	private URL mMockURL;
-	private Proxy mProxy;
-	private HttpURLConnection mMockHttpURLConnection;
-	private static final String SAVEPATH = "./appdata/test.mp4";
 
-	@BeforeEach
-	void setUp() throws Exception {
-		new File(SAVEPATH).delete();
-		new File(SAVEPATH + ".0").delete();
+  // Constants for test data
+  private static final char[] TEST_CONTENT = "0123456789".toCharArray();
+  private static final String COOKIE = "C11=\"v1\";$Path=\"some/path\"";
+  private static final String SAVE_PATH = "./appdata/test.mp4";
 
-		mProxy = new Proxy(Proxy.Type.HTTP, new java.net.InetSocketAddress("192.168.0.100", 8118));
+  // Mock objects and other attributes
+  private URL mMockURL;
+  private Proxy mProxy;
+  private HttpURLConnection mMockHttpURLConnection;
 
-		mMockHttpURLConnection = mock(HttpURLConnection.class);
-		when(mMockHttpURLConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+  // Setup performed before each test
+  @BeforeEach
+  void setUp() throws Exception {
+      cleanUpFiles();
+      mProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.0.100", 8118));
+      mMockHttpURLConnection = mock(HttpURLConnection.class);
+      when(mMockHttpURLConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+      mMockURL = mock(URL.class);
+      when(mMockURL.openConnection(any())).thenReturn(mMockHttpURLConnection);
+  }
 
-		mMockURL = mock(URL.class);
-		Mockito.when(mMockURL.openConnection(Mockito.notNull())).thenReturn(mMockHttpURLConnection);
-	}
-	
-	@AfterEach
-	void tearDown() throws Exception {
-		new File(SAVEPATH).delete();
-		new File(SAVEPATH + ".0").delete();
-	}
-	
-	private boolean verifyFile(long length, File file, char[] pattern) {
+  // Cleanup performed after each test
+  @AfterEach
+  void tearDown() throws Exception {
+      cleanUpFiles();
+  }
 
-		boolean ret = true;
-		ret &= file.exists();
-		ret &= file.length() == length;
+  // Helper method to delete test files
+  private void cleanUpFiles() {
+      new File(SAVE_PATH).delete();
+      new File(SAVE_PATH + ".0").delete();
+  }
 
-		StringBuffer sb = new StringBuffer();
+  private boolean verifyFile(long length, File file, char[] pattern) {
 
-		for (int i = 0; i < file.length() - pattern.length; i += pattern.length) {
-			sb.append(pattern);
-		}
+    boolean ret = true;
+    ret &= file.exists();
+    ret &= file.length() == length;
 
-		for (int i = 0; sb.length() < length; i++) {
-			sb.append(pattern[i % pattern.length]);
-		}
-		String shouldPattern = sb.toString();
+    StringBuilder sb = new StringBuilder();
 
-		try {
-			String content = new String(Files.readAllBytes(file.toPath()));
-			ret &= content.length() == shouldPattern.length();
-			ret &= shouldPattern.equals(content);
-		} catch (IOException e) {
-			e = null;
-			ret = false;
-		}
+    for (int i = 0; i < file.length() - pattern.length; i += pattern.length) {
+      sb.append(pattern);
+    }
 
-		return ret;
-	}
+    for (int i = 0; sb.length() < length; i++) {
+      sb.append(pattern[i % pattern.length]);
+    }
+    String shouldPattern = sb.toString();
 
-	@Test
-	void testExtractCookie() throws IOException, InterruptedException, ExecutionException {
-		Set<Cookie> cookies = new HashSet<Cookie>();
-		cookies.add(new Cookie("C11", "v1", "some/path"));
+    try {
+      String content = new String(Files.readAllBytes(file.toPath()));
+      ret &= content.length() == shouldPattern.length();
+      ret &= shouldPattern.equals(content);
+    } catch (IOException e) {
+      e = null;
+      ret = false;
+    }
 
-		WebDriver mockDriver = mock(WebDriver.class);
-		Options mockOptions = mock(Options.class);
-		when(mockDriver.manage()).thenReturn(mockOptions);
-		when(mockOptions.getCookies()).thenReturn(cookies);
+    return ret;
+  }
 
-		String cookie = DownloadUtils.extractCookie(mockDriver);
-		Assertions.assertEquals(cookie, COOKIE);
-	}
+  /**
+   * Tests the extractCookie method of DownloadUtils.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testExtractCookie() throws IOException, InterruptedException, ExecutionException {
+    Set<Cookie> cookies = new HashSet<Cookie>();
+    cookies.add(new Cookie("C11", "v1", "some/path"));
 
-	@Test
-	void testDownloadInvalidContentLength() throws IOException, InterruptedException, ExecutionException {
+    WebDriver mockDriver = mock(WebDriver.class);
+    Options mockOptions = mock(Options.class);
+    when(mockDriver.manage()).thenReturn(mockOptions);
+    when(mockOptions.getCookies()).thenReturn(cookies);
 
-		int numThreads = 1;
+    String cookie = DownloadUtils.extractCookie(mockDriver);
+    Assertions.assertEquals(cookie, COOKIE);
+  }
 
-		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(Long.MIN_VALUE);
-		DownloadStatusCode status = new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+  /**
+   * Tests the downloadSync method of ResumableDownload with an invalid content length.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testDownloadInvalidContentLength() throws IOException, InterruptedException, ExecutionException {
 
-		Assertions.assertTrue(status != DownloadStatusCode.COMPLETE);
-	}
+    int numThreads = 1;
 
-	@Test
-	void testDownloadErrorCode() throws IOException, InterruptedException, ExecutionException {
+    when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(Long.MIN_VALUE);
+    DownloadStatusCode status = new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		int numThreads = 1;
+    Assertions.assertTrue(status != DownloadStatusCode.COMPLETE);
+  }
 
-		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(Long.MIN_VALUE);
-		when(mMockHttpURLConnection.getResponseCode()).thenReturn(404);
+  /**
+   * Tests the downloadSync method of ResumableDownload with an HTTP error code.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testDownloadErrorCode() throws IOException, InterruptedException, ExecutionException {
 
-		DownloadStatusCode status = new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+    int numThreads = 1;
 
-		Assertions.assertTrue(status == DownloadStatusCode.NOT_FOUND);
-	}
+    when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(Long.MIN_VALUE);
+    when(mMockHttpURLConnection.getResponseCode()).thenReturn(404);
 
-	@Test
-	void testDownloadUsesProxyWhenProvided() throws IOException, InterruptedException, ExecutionException {
+    DownloadStatusCode status = new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		int numThreads = 1;
+    Assertions.assertTrue(status == DownloadStatusCode.NOT_FOUND);
+  }
 
-		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) 100);
-		when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
-		when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
+  /**
+   * Tests that downloadSync uses a proxy when provided.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testDownloadUsesProxyWhenProvided() throws IOException, InterruptedException, ExecutionException {
 
-			@Override
-			public int read() throws IOException {
-				return 0;
-			}
-		});
+    int numThreads = 1;
 
-		new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+    when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) 100);
+    when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
+    when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
 
-		// not allowed without using proxy
-		verify(mMockURL, times(0)).openConnection();
-	}
+      @Override
+      public int read() throws IOException {
+        return 0;
+      }
+    });
 
-	@Test
-	void testDownloadUsesNoProxyWhenNotProvided() throws IOException, InterruptedException, ExecutionException {
+    new ResumableDownload(numThreads, mProxy, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		int numThreads = 1;
+    // not allowed without using proxy
+    verify(mMockURL, times(0)).openConnection();
+  }
 
-		when(mMockURL.openConnection(notNull())).thenReturn(null);
-		when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
-		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) 8 * 1024 * 1024);
-		when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
-		when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
-			int idx = 0;
+  /**
+   * Tests that downloadSync does not use a proxy when not provided.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testDownloadUsesNoProxyWhenNotProvided() throws IOException, InterruptedException, ExecutionException {
 
-			@Override
-			public int read() throws IOException {
-				return TESTCONTENT[idx++ % (TESTCONTENT.length)];
-			}
-		});
+    int numThreads = 1;
 
-		new ResumableDownload(numThreads, null, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+    when(mMockURL.openConnection(notNull())).thenReturn(null);
+    when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
+    when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) 8 * 1024 * 1024);
+    when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
+    when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
+      int idx = 0;
 
-		// not allowed with proxy
-		verify(mMockURL, times(0)).openConnection(notNull());
-	}
+      @Override
+      public int read() throws IOException {
+        return TEST_CONTENT[idx++ % (TEST_CONTENT.length)];
+      }
+    });
 
-	@Test
-	void testDownloadResume() throws IOException, InterruptedException, ExecutionException {
+    new ResumableDownload(numThreads, null, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		int numThreads = 1;
-		final AtomicBoolean closeStream = new AtomicBoolean(true);
+    // not allowed with proxy
+    verify(mMockURL, times(0)).openConnection(notNull());
+  }
 
-		when(mMockURL.openConnection(notNull())).thenReturn(null);
-		when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
-		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) TESTCONTENT.length);
-		when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
-		when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
-			int idx = 0;
+  /**
+   * Tests that downloadSync can resume a download.
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  void testDownloadResume() throws IOException, InterruptedException, ExecutionException {
 
-			@Override
-			public int read() throws IOException {
-				int ret = 0;
-				if (closeStream.get() && idx >= 5) {
-					close();
-					ret = -1;
-				} else
-					ret = TESTCONTENT[idx++ % (TESTCONTENT.length)];
-				return ret;
-			}
-		});
+    int numThreads = 1;
+    final AtomicBoolean closeStream = new AtomicBoolean(true);
 
-		DownloadStatusCode status = new ResumableDownload(numThreads, null, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+    when(mMockURL.openConnection(notNull())).thenReturn(null);
+    when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
+    when(mMockHttpURLConnection.getContentLengthLong()).thenReturn((long) TEST_CONTENT.length);
+    when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
+    when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
+      int idx = 0;
 
-		Assertions.assertTrue(status == DownloadStatusCode.ERROR);
+      @Override
+      public int read() throws IOException {
+        int ret = 0;
+        if (closeStream.get() && idx >= 5) {
+          close();
+          ret = -1;
+        } else
+          ret = TEST_CONTENT[idx++ % (TEST_CONTENT.length)];
+        return ret;
+      }
+    });
 
-		closeStream.set(false);
+    DownloadStatusCode status = new ResumableDownload(numThreads, null, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		status = new ResumableDownload(numThreads, null, new DownloadStatusListener() {
-			@Override
-			public void onPartProgress(PartProgressUpdateEvent event) {
-			}
-		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
+    Assertions.assertTrue(status == DownloadStatusCode.ERROR);
 
-		Assertions.assertTrue(status == DownloadStatusCode.COMPLETE);
+    closeStream.set(false);
 
-		File file = new File(SAVEPATH);
-		Assertions.assertTrue(file.exists());
+    status = new ResumableDownload(numThreads, null, new DownloadStatusListener() {
+      @Override
+      public void onPartProgress(PartProgressUpdateEvent event) {
+      }
+    }).downloadSync(mMockURL, SAVE_PATH, COOKIE);
 
-		Assertions.assertTrue(verifyFile(TESTCONTENT.length, new File(SAVEPATH), TESTCONTENT));
-	}
+    Assertions.assertTrue(status == DownloadStatusCode.COMPLETE);
 
-//	@Test
-//	void testDownloadFileLargerThanSizePerRead() throws IOException, InterruptedException, ExecutionException {
-//		long length = (10 * 1024 * 1024) + 2;
-//		int numThreads = 1;
-//
-//		when(mMockURL.openConnection(notNull())).thenReturn(null);
-//		when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
-//		when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(length);
-//		when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
-//		when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
-//			int idx = 0;
-//
-//			@Override
-//			public int read() throws IOException {
-//				return TESTCONTENT[idx++ % (TESTCONTENT.length)];
-//			}
-//		});
-//
-//		DownloadStatusCode status = new ResumableDownload(numThreads, null, new DownloadStatusListener() {
-//			@Override
-//			public void onPartProgress(PartProgressUpdateEvent event) {
-//			}
-//		}).downloadSync(mMockURL, SAVEPATH, COOKIE);
-//
-//		Assertions.assertTrue(status == DownloadStatusCode.COMPLETE);
-//		Assertions.assertTrue(verifyFile(length, new File(SAVEPATH), TESTCONTENT));
-//	}
+    File file = new File(SAVE_PATH);
+    Assertions.assertTrue(file.exists());
+
+    Assertions.assertTrue(verifyFile(TEST_CONTENT.length, new File(SAVE_PATH), TEST_CONTENT));
+  }
+
+  // @Test
+  // void testDownloadFileLargerThanSizePerRead() throws IOException,
+  // InterruptedException, ExecutionException {
+  // long length = (10 * 1024 * 1024) + 2;
+  // int numThreads = 1;
+  //
+  // when(mMockURL.openConnection(notNull())).thenReturn(null);
+  // when(mMockURL.openConnection()).thenReturn(mMockHttpURLConnection);
+  // when(mMockHttpURLConnection.getContentLengthLong()).thenReturn(length);
+  // when(mMockHttpURLConnection.getResponseCode()).thenReturn(200);
+  // when(mMockHttpURLConnection.getInputStream()).thenReturn(new InputStream() {
+  // int idx = 0;
+  //
+  // @Override
+  // public int read() throws IOException {
+  // return TESTCONTENT[idx++ % (TESTCONTENT.length)];
+  // }
+  // });
+  //
+  // DownloadStatusCode status = new ResumableDownload(numThreads, null, new
+  // DownloadStatusListener() {
+  // @Override
+  // public void onPartProgress(PartProgressUpdateEvent event) {
+  // }
+  // }).downloadSync(mMockURL, SAVEPATH, COOKIE);
+  //
+  // Assertions.assertTrue(status == DownloadStatusCode.COMPLETE);
+  // Assertions.assertTrue(verifyFile(length, new File(SAVEPATH), TESTCONTENT));
+  // }
 }
