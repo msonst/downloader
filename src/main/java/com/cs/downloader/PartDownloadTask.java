@@ -38,7 +38,6 @@ class PartDownloadTask implements Callable<TaskResult> {
   private static final Logger LOGGER = LoggerFactory.getLogger(PartDownloadTask.class);
   private static final long BLOCK_SIZE = 10 * 1024 * 1024;
   private static final int MAX_RETRY_ATTEMPTS = 5;
-  private static final int MIN_ZERO_COUNTER = 3;
 
   private final URL mUrl;
   private final String mPartName;

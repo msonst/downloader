@@ -15,11 +15,17 @@ package com.cs.downloader.event;
  */
 public interface DownloadStatusListener extends java.util.EventListener {
 
-    /**
-     * Called when a part of the download progresses.
-     *
-     * @param event The event containing information about the part progress.
-     */
-    public void onProgress(PartProgressUpdateEvent event);
-    public void onProgress(DownloadProgressUpdateEvent event);
+	/**
+	 * Called when a part of the download progresses.
+	 *
+	 * @param event The event containing information about the part progress.
+	 */
+	public void onProgress(PartProgressUpdateEvent event);
+
+	/**
+	 * Called when a part of the download progresses.
+	 *
+	 * @param event The event containing information about the part progress.
+	 */
+	public void onProgress(DownloadProgressUpdateEvent event);
 }
