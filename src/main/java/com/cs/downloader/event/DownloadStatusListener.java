@@ -20,5 +20,6 @@ public interface DownloadStatusListener extends java.util.EventListener {
      *
      * @param event The event containing information about the part progress.
      */
-    public void onPartProgress(PartProgressUpdateEvent event);
+    public void onProgress(PartProgressUpdateEvent event);
+    public void onProgress(DownloadProgressUpdateEvent event);
 }

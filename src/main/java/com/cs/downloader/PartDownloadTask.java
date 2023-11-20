@@ -33,9 +33,9 @@ import com.cs.downloader.jmx.DownloadStats;
 /**
  * Represents a task for downloading parts of a file.
  */
-class DownloadTask implements Callable<TaskResult> {
+class PartDownloadTask implements Callable<TaskResult> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DownloadTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PartDownloadTask.class);
   private static final long BLOCK_SIZE = 10 * 1024 * 1024;
   private static final int MAX_RETRY_ATTEMPTS = 5;
   private static final int MIN_ZERO_COUNTER = 3;
@@ -65,7 +65,7 @@ class DownloadTask implements Callable<TaskResult> {
    * @param cookie       The cookie for authentication (if required).
    * @param proxy        The proxy for the connection (if required).
    */
-  public DownloadTask(ResumableDownload downloader, URL url, String saveFileName, long startRange, long endRange, int id, String cookie,
+  public PartDownloadTask(ResumableDownload downloader, URL url, String saveFileName, long startRange, long endRange, int id, String cookie,
       Proxy proxy) {
     mDownloader = downloader;
     mUrl = url;
@@ -199,4 +199,5 @@ class DownloadTask implements Callable<TaskResult> {
       return DownloadStatusCode.COMPLETE;
     }
   }
+
 }

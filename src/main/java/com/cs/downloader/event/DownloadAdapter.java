@@ -16,13 +16,21 @@ package com.cs.downloader.event;
  */
 public abstract class DownloadAdapter implements DownloadStatusListener {
 
-    // Empty implementations for all methods in DownloadStatusListener
+	// Empty implementations for all methods in DownloadStatusListener
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onPartProgress(PartProgressUpdateEvent event) {
-        // Empty implementation
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onProgress(PartProgressUpdateEvent event) {
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onProgress(DownloadProgressUpdateEvent event) {
+
+	}
 }

@@ -1,6 +1,6 @@
 [![Test on Checkin](https://github.com/msonst/downloader/actions/workflows/test.yml/badge.svg)](https://github.com/msonst/downloader/actions/workflows/test.yml) 
 [![Maven Central & GitHub](https://github.com/msonst/downloader/actions/workflows/publish.yml/badge.svg)](https://github.com/msonst/downloader/actions/workflows/publish.yml)
-# File downloader library for Java. (Resuming, Multipart, Multithreading)
+# File downloader library for Java. (Resuming)
 
 ## Introduction
 
@@ -13,6 +13,11 @@ This Java project provides a resumable file download mechanism with support for 
 - Track and display download progress.
 - Customizable download status listeners.
 - JMX-based statistics tracking.
+
+## Note on "multiple threads for the same download"
+In Java, it usually does not make sense to download a single file using multiple threads. This is because the download is typically limited by network speed, and splitting it into multiple threads can lead to contention situations that do not necessarily improve efficiency.
+It is often more effective to use a single thread for downloading and reserve other threads for tasks such as data processing or handling, to enhance the overall performance of the program.
+However, since each thread establishes its own connection, in conjunction with rotating proxy chains, this can both enhance anonymity and improve data throughput due to the limited bandwidth of the chain.
 
 ## Usage
 
@@ -30,11 +35,11 @@ This Java project provides a resumable file download mechanism with support for 
 
 ### Clone the repository:
 	
-	git clone https://github.com/msonst/ResumableDownload.git
+	git clone https://github.com/msonst/Downloader.git
    
 ### Build the project:
 
-	cd ResumableDownload
+	cd Downloader
 	./gradlew build
 	
 ### Example
@@ -66,16 +71,10 @@ This Java project provides a resumable file download mechanism with support for 
 	driver.quit();
 
 	// Download
-	ResumableDownload downloader = new ResumableDownload(4, proxy, yourDownloadStatusListener);
-	URL url = new URL("https://example.com/largefile.zip");
-	String saveFileName = "downloadedFile.zip";
-	
-	DownloadStatusCode status = downloader.downloadSync(url, saveFileName, cookie);
-	if (status.isOK()) {
-	    System.out.println("Download successful!");
-	} else {
-	    System.out.println("Download failed with status: " + status);
-	}
+	DownloadManager dlm = new DownloadManager(mProxy, SAVE_PATH, 1);
+	Download download = dlm.addDownload(new URL("url"), cookie);
+	uut.start(download);
+	uut.waitForCompletion();
 
 ### Monitoring
 A JMX Object is created for each download

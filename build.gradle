@@ -32,8 +32,8 @@ plugins {
 }
 
 group = 'com.corporate-startup'
-version = '1.0.0'
-rootProject.description = 'Multipart/threading, resuming file downloader library for Java.'
+version = '1.1.0-SNAPSHOT'
+rootProject.description = 'Resuming file downloader library for Java.'
 
 repositories {
     mavenCentral()
@@ -43,7 +43,7 @@ dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
     implementation 'commons-io:commons-io:2.15.0'
-    
+
     implementation 'org.apache.logging.log4j:log4j-api:2.21.1'
 	implementation 'org.apache.logging.log4j:log4j-core:2.21.1'
 	implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.21.1'
@@ -157,12 +157,18 @@ publishing {
                 scm {
                     connection = 'scm:git:git://github.com/msonst/downloader.git'
                     developerConnection = 'scm:git:ssh://git@github.com:msonst/downloader.git'
-                    url = 'https://github.com/msonst/downloader'
+                    url = 'https://github.com/msonst/downloader/tree/main'
                 }
             }
         }
     }
     repositories {
+    	// check what will be published with: ./gradlew publishAllPublicationsToLocalCheckRepository
+        maven {
+		    name = "LocalCheck"
+		    url = uri("$buildDir/repos/LocalCheck")
+    	}
+    
         maven {
             name = "OSSRH"
             if (admin) {
