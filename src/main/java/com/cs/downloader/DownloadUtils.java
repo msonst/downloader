@@ -10,10 +10,10 @@
  */
 package com.cs.downloader;
 
+import java.util.ArrayList;
+
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
-
-import java.util.ArrayList;
 
 /**
  * Utility class for downloading operations.

@@ -103,7 +103,7 @@ public class DownloadManager {
      */
     public void start(Download download) {
         LOGGER.debug("Start {}", download);
-        UUID id = download.getDownloadId();
+        UUID id = download.downloadId();
         DownloadTask downloadTask = mDownloadTasks.get(id);
         mExecuting.put(id, mPool.submit(downloadTask));
     }
@@ -147,7 +147,7 @@ public class DownloadManager {
      * @return {@code true} if the download is complete, {@code false} otherwise.
      */
     public boolean isComplete(Download download) {
-        Future<DownloadStatusCode> future = mExecuting.get(download.getDownloadId());
+        Future<DownloadStatusCode> future = mExecuting.get(download.downloadId());
         return (null != future) ? future.isDone() : true;
     }
 }

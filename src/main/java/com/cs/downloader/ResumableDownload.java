@@ -43,7 +43,6 @@ public class ResumableDownload {
 	private DownloadStatusListener mListener;
 	private int mNumThreads;
 	private Proxy mProxy;
-	private String mSimpleName;
 	private DownloadStats[] mTaskStati;
 
 	/**
@@ -77,9 +76,6 @@ public class ResumableDownload {
 
 		DownloadStatusCode responseCode = DownloadStatusCode.ERROR;
 		long fileSize = -1;
-
-		String[] split = saveFileName.split("/");
-		mSimpleName = split[split.length - 1];
 
 		LOGGER.info("Starting fileUrl={}, saveFileName={}, numThreads={}, cookie={}, proxy={}", url, saveFileName,
 				mNumThreads, cookie, mProxy);
@@ -153,7 +149,7 @@ public class ResumableDownload {
 				e.printStackTrace();
 			}
 			return null;
-		}).filter(p -> (null != p && p.isComplete())).collect(Collectors.toList());
+		}).filter(p -> (null != p && p.responseCode().isOK())).collect(Collectors.toList());
 
 		if (finished.size() == mNumThreads) {
 			mergeFiles(saveFileName, mNumThreads);
