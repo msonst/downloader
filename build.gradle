@@ -32,7 +32,7 @@ plugins {
 }
 
 group = 'com.corporate-startup'
-version = '1.1.0'
+version = '1.2.0'
 rootProject.description = 'Resuming file downloader library for Java.'
 
 repositories {
