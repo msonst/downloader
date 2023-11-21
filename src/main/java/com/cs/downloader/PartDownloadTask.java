@@ -48,8 +48,6 @@ class PartDownloadTask implements Callable<TaskResult> {
   private final Proxy mProxy;
   private long mFileSzAtStart;
   private ResumableDownload mDownloader;
-  private DownloadStats mDownloadStats = new DownloadStats();
-  private String mSimpleName;
   private long mAdjustedStartRange;
 
   /**
@@ -76,15 +74,6 @@ class PartDownloadTask implements Callable<TaskResult> {
     mProxy = proxy;
 
     LOGGER.debug("New task {} ", toString());
-
-    try {
-      ObjectName objectName = new ObjectName("com.cs.downloader:name=DownloadStats-" + mSimpleName + "-" + id);
-      mDownloadStats = new DownloadStats();
-      ManagementFactory.getPlatformMBeanServer().registerMBean(mDownloadStats, objectName);
-    } catch (Exception e) {
-      e.printStackTrace();
-      // continue without jmx
-    }
   }
 
   @Override

@@ -43,7 +43,6 @@ public class ResumableDownload {
 	private DownloadStatusListener mListener;
 	private int mNumThreads;
 	private Proxy mProxy;
-	private DownloadStats[] mTaskStati;
 
 	/**
 	 * Constructs a new ResumableDownload instance.
@@ -56,7 +55,6 @@ public class ResumableDownload {
 		mNumThreads = numThreads;
 		mProxy = proxy;
 		mListener = listener;
-		mTaskStati = new DownloadStats[mNumThreads];
 	}
 
 	/**
@@ -202,8 +200,6 @@ public class ResumableDownload {
 	 */
 	public synchronized void updateTaskStatus(int threadId, long startRange, long endRange, long bytes,
 			long transferred, long fileSzAtStart, long start, long end) {
-
-		mTaskStati[threadId].update(threadId, startRange, endRange, bytes, transferred, fileSzAtStart, start, end);
 
 		CompletableFuture.runAsync(() -> mListener.onProgress(new PartProgressUpdateEvent(this, threadId, startRange,
 				endRange, bytes, transferred, fileSzAtStart, start, end)));
