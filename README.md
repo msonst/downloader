@@ -30,7 +30,7 @@ However, since each thread establishes its own connection, in conjunction with r
 	<dependency>
 	  <groupId>com.corporate-startup</groupId>
 	  <artifactId>downloader</artifactId>
-	  <version>1.1.0</version>
+	  <version>1.2.0</version>
 	</dependency>
 
 ### Clone the repository:
