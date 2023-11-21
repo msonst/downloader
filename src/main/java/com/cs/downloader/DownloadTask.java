@@ -54,7 +54,12 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
      */
     public DownloadTask(URL url, String cookie, Proxy proxy, String savePath, int threadCount,
                         DownloadStatusListener downloadStatusListener) {
-        // ...
+    	mURL = url;
+		mCookie = cookie;
+		mProxy = proxy;
+		mSavePath = savePath;
+		mThreadCount = threadCount;
+		mDownloadStatusListener = downloadStatusListener;
     }
 
     /**

@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
@@ -114,7 +115,7 @@ class DownloadManagerTest {
      DownloadManager uut = new DownloadManager(mProxy, SAVE_PATH, 1);
 
      // Create an array to store downloads
-     Download[] downloads = new Download[10];
+     UUID[] downloads = new UUID[10];
      for (int i = 0; i < 10; i++) {
          // Add a download task with a mock URL and cookie
          downloads[i] = uut.addDownload(mockUrl(mProxy), COOKIE);
@@ -124,7 +125,7 @@ class DownloadManagerTest {
      }
 
      // Check if the first download is complete
-     uut.isComplete(downloads[0]);
+     uut.getStatus(downloads[0]);
 
      // Wait for all downloads to complete
      uut.waitForCompletion();
