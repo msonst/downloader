@@ -28,6 +28,9 @@ repositories {
     mavenCentral()
 }
 
+group = 'com.corporate-startup'
+version = '2.0.0'
+
 ext['junitjupiterversion'] = '5.7.1'
 ext['springbootversion'] = '3.1.4'
 ext['slf4japiversion'] = '2.0.9'
