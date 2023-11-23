@@ -1,5 +1,5 @@
 [![Test on Checkin](https://github.com/msonst/downloader/actions/workflows/test.yml/badge.svg)](https://github.com/msonst/downloade-server/actions/workflows/test.yml) 
-[![Maven Central & GitHub](https://github.com/msonst/downloader/actions/workflows/publish.yml/badge.svg?branch=main&event=push)](https://github.com/msonst/downloader/actions/workflows/publish.yml)
+[![Maven Central & GitHub](https://github.com/msonst/downloader/actions/workflows/publish.yml/badge.svg)](https://github.com/msonst/downloader/actions/workflows/publish.yml)
 # Stand-alone File Downloader with REST API and Plugins. (Resuming)
 
 ## Introduction
