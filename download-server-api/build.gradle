@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+    id 'java-lib-conventions'
 }
 
-rootProject.name = 'download'
+rootProject.description = 'File download-server api.'
 
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')
+dependencies {	
+	implementation project(':download-base')
+}
+
+jar {
+    manifest {
+        attributes(
+                "Class-Path": "com.cs.download.client",
+                "Main-Class": "com.cs.download.client.Application",
+                "Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Implementation-Vendor": "Michael Sonst",
+                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
+                "Gradle-Version": GradleVersion.current().toString()
+        )
+    }
+}
+

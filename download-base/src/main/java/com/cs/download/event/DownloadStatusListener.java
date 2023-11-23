@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.event;
+
+/**
+ * An interface for receiving notifications about the progress of a download.
+ */
+public interface DownloadStatusListener extends java.util.EventListener {
+
+  /**
+   * Called when a part of the download progresses.
+   *
+   * @param event The event containing information about the part progress.
+   */
+  public void onProgress(PartProgressUpdateEvent event);
+
+  /**
+   * Called when a the download progresses.
+   *
+   * @param event The event containing information about the part progress.
+   */
+  public void onProgress(DownloadProgressUpdateEvent event);
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

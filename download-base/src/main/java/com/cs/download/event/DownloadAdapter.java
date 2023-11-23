@@ -13,11 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.event;
+
+/**
+ * An abstract adapter class for the {@link DownloadStatusListener} interface.
+ * This class provides empty implementations of all methods for easy extension.
+ */
+public abstract class DownloadAdapter implements DownloadStatusListener {
+
+  // Empty implementations for all methods in DownloadStatusListener
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onProgress(PartProgressUpdateEvent event) {
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onProgress(DownloadProgressUpdateEvent event) {
+
+  }
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

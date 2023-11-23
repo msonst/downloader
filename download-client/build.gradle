@@ -1,0 +1,58 @@
+/*
+ *     Copyright 2023 Michael Sonst @ https://www.corporate-startup.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+plugins {
+    id 'java-app-conventions'
+}
+
+rootProject.description = 'File download-client.'
+
+dependencies {	
+	implementation project(':download-server-api')
+	
+	implementation "io.rest-assured:rest-assured:${restassuredversion}"
+	
+}
+
+application {
+    mainClassName  = 'com.cs.download.server.Application' 
+    applicationDefaultJvmArgs = [
+ 	  '-Dsun.management.jmxremote.level=FINEST',
+  	  '-Dsun.management.jmxremote.handlers=java.util.logging.ConsoleHandler',
+      '-Djava.util.logging.ConsoleHandler.level=FINEST',
+      '-Dcom.sun.management.jmxremote.local.only=false',
+      '-Dcom.sun.management.jmxremote.ssl=false',
+      '-Dcom.sun.management.jmxremote.authenticate=false',
+      '-Dcom.sun.management.jmxremote.port=9010',
+      '-Dcom.sun.management.jmxremote.rmi.port=9010',
+      '-Djava.rmi.server.hostname=192.168.0.200',
+      '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:4242'
+   ]
+}
+
+jar {
+    manifest {
+        attributes(
+                "Class-Path": "com.cs.download.client",
+                "Main-Class": "com.cs.download.client.Application",
+                "Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Implementation-Vendor": "Michael Sonst",
+                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
+                "Gradle-Version": GradleVersion.current().toString()
+        )
+    }
+}
+

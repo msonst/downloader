@@ -1,7 +1,6 @@
-.gradle
-build
-bin
-appdata
-.settings
-.project
-.classpath
+.gradle*
+*/build/*
+*.settings/*
+*/bin/*
+*.classpath*
+*.project*

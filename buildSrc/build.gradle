@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+    id("groovy-gradle-plugin")
 }
 
-rootProject.name = 'download'
+repositories {
+    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+}
 
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')
+group = 'com.corporate-startup'
+version = '2.0.0'
+
+ext['springbootgradleversion'] = '3.1.4'
+
+dependencies {    
+    implementation "org.springframework.boot:spring-boot-gradle-plugin:${springbootgradleversion}"
+    implementation "com.github.ben-manes:gradle-versions-plugin:0.46.0"
+    implementation "com.palantir.gradle.docker:gradle-docker:0.35.0"
+    
+    testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+}

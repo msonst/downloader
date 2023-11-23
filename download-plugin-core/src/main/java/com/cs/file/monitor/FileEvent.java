@@ -13,11 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.file.monitor;
+
+import java.io.File;
+
+import java.util.EventObject;
+
+/**
+ * An event that indicates a change in the state of a file.
+ */
+public class FileEvent extends EventObject {
+
+  private static final long serialVersionUID = -626534786669993230L;
+
+  /**
+   * Constructs a FileEvent with the specified file.
+   *
+   * @param file The file associated with the event.
+   */
+  public FileEvent(File file) {
+    super(file);
+  }
+
+  /**
+   * Gets the file associated with this event.
+   *
+   * @return The file associated with this event.
+   */
+  public File getFile() {
+    return (File) getSource();
+  }
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

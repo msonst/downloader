@@ -1,0 +1,24 @@
+server:
+  port: 9090
+
+
+logging:
+  level:
+    org.springframework: INFO
+    com.cs: DEBUG
+    
+proxy:
+  host: "192.168.0.100"
+  port: 8118  
+    
+app:
+  outpath: "./data"
+  parallel_downloads: 10
+  
+spring:
+  application:
+    name: mein-projekt
+  profiles:
+    active: dev
+ 
+  

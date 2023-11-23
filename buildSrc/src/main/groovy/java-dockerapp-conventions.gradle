@@ -1,0 +1,60 @@
+/*
+ *     Copyright 2023 Michael Sonst @ https://www.corporate-startup.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+plugins {
+	id 'java-common-conventions'
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+	id 'application'    
+	id 'distribution'
+    id "com.palantir.docker"
+	id "com.palantir.docker-run"        
+	id "com.palantir.docker-compose"
+}
+
+ dependencies { 
+
+}
+
+//push to local registry
+//.docker\daemon.json add  "insecure-registries":["${dockerregistry}"] 
+docker {
+    name "${dockerregistry}/${project.name}:${project.version}"
+    tag 'om', "${dockerregistry}/${project.name}:${project.version}"
+    
+    dockerfile file('Dockerfile')
+    buildArgs([BUILD_VERSION: 'version'])
+    pull true
+    noCache true
+    
+    files "build/distributions/${project.name}-${project.version}.tar", 'config'
+}
+
+dockerRun {
+    name "${project.name}"
+    image "${project.name}:${project.version}"
+    ports '9090:9090'
+    clean true
+}
+
+dockerCompose {
+    template 'docker-compose.yml.template'
+    dockerComposeFile 'docker-compose.yml'
+    templateTokens([
+    	'currentImageName': "${dockerregistry}/${project.name}:${project.version}", 
+    	'torimage': "${dockerregistry}/tor", 
+    	'privoxyimage': "${dockerregistry}/privoxy"
+    ])
+}

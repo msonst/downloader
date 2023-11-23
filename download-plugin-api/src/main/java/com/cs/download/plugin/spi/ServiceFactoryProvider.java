@@ -12,12 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */package com.cs.download.plugin.spi;
+
+import com.cs.download.plugin.api.PluginInfo;
+
+/**
+ * Interface for a provider that supplies information about a service factory.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+public interface ServiceFactoryProvider {
+
+  /**
+   * Gets information about the service factory provided by this provider.
+   *
+   * @return Information about the service factory.
+   */
+  PluginInfo getPluginInfo();
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

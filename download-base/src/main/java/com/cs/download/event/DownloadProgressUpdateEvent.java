@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.event;
+
+import java.io.Serializable;
+
+/**
+ * The {@code DownloadProgressUpdateEvent} class represents an event indicating the progress update
+ * during the download process.
+ *
+ * @see DownloadEvent
+ */
+public class DownloadProgressUpdateEvent extends DownloadEvent implements Serializable {
+
+  private static final long serialVersionUID = 2353566631945415574L;
+
+  /**
+   * Constructs a new {@code DownloadProgressUpdateEvent} with the specified source.
+   *
+   * @param source The object on which the event initially occurred.
+   */
+  public DownloadProgressUpdateEvent(Object source) {
+    super(source);
+  }
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

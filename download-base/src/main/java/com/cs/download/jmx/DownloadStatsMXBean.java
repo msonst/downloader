@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.jmx;
+
+public interface DownloadStatsMXBean {
+  public int getThreadId();
+
+  public long getStartRange();
+
+  public long getEndRange();
+
+  public long getBytes();
+
+  public long getTransferred();
+
+  public long getFileSzAtStart();
+
+  public long getStart();
+
+  public long getEnd();
+
+  public double getCycleTime();
+
+  public double getMbit();
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

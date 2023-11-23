@@ -12,12 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */package com.cs.download.plugin.exception;
+
+/**
+ * Exception thrown when a provider is not found.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+public class ProviderNotFoundException extends RuntimeException {
+
+  private static final long serialVersionUID = 7436237689201119293L;
+
+  /**
+     * Constructs a new instance of the exception.
+     */
+  public ProviderNotFoundException() {
+    super();
+  }
+
+  /**
+   * Constructs a new instance of the exception with the specified message.
+   *
+   * @param message The detail message.
+   */
+  public ProviderNotFoundException(String message) {
+    super(message);
+  }
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

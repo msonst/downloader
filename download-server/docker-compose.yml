@@ -1,0 +1,26 @@
+version: "3"
+services:
+  tor:
+    image: 'om.local:5000/tor'
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+    container_name: tor
+    restart: always
+  privoxy:    
+    depends_on: 
+      - tor
+    image: 'om.local:5000/privoxy'
+    ports:
+      - "8118:8118"
+    container_name: privoxy
+    restart: always
+  app:    
+    depends_on:
+      - privoxy
+    image: 'om.local:5000/download-server:1.0.0-SNAPSHOT'
+    volumes:
+      - ./appdata:/appdata
+    ports:
+      - "9010:9010"
+      - "5005:5005"

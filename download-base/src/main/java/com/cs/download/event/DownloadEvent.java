@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.event;
+
+import java.util.EventObject;
+
+/**
+ * Base class for events related to the download process.
+ */
+public class DownloadEvent extends EventObject {
+
+  private static final long serialVersionUID = -1558990924122036970L;
+
+  /**
+   * Constructs a new DownloadEvent with the specified source object.
+   *
+   * @param source The source object that generated the event.
+   */
+  public DownloadEvent(Object source) {
+    super(source);
+  }
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

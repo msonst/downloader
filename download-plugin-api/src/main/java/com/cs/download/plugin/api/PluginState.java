@@ -13,11 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+package com.cs.download.plugin.api;
+
+/**
+ * Enumeration representing the different states of a plugin.
+ */
+public enum PluginState {
+
+  /**
+   * The plugin is plugged in and ready.
+   */
+  PLUGGED,
+
+  /**
+   * The plugin is unplugged or not in use.
+   */
+  UNPLUGGED,
+
+  /**
+   * The plugin is currently running.
+   */
+  RUNNING,
+
+  /**
+   * The plugin has finished its operation.
+   */
+  FINISHED
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

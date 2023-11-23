@@ -12,12 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */package com.cs.download.plugin.api;
+
+/**
+ * Enumeration representing the different states of a service.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+public enum ServiceState {
+
+  /**
+   * The service is stopped.
+   */
+  STOPPED,
+
+  /**
+   * The service is running.
+   */
+  RUNNING,
+
+  /**
+   * The service encountered an error.
+   */
+  ERROR
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')

@@ -12,12 +12,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */package com.cs.download.plugin.api;
+
+/**
+ * Interface representing a generic service with start, stop, and status operations.
  */
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+public interface Service {
+
+  /**
+   * Starts the service.
+   *
+   * @return The result of the start operation.
+   */
+  ServiceResult start();
+
+  /**
+   * Stops the service.
+   *
+   * @return The result of the stop operation.
+   */
+  ServiceResult stop();
+
+  /**
+   * Retrieves the status of the service.
+   *
+   * @return The result representing the status of the service.
+   */
+  ServiceResult status();
 }
-
-rootProject.name = 'download'
-
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')
