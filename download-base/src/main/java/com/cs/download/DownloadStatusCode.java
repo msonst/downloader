@@ -387,7 +387,7 @@ public class DownloadStatusCode {
    */
   @JsonIgnore
   public boolean isOK() {
-    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getRespponseCode()) && "" == mMessage;
+    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getRespponseCode()) && ("" == mMessage || null == mMessage);
   }
 
   /**
