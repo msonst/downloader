@@ -10,7 +10,7 @@ plugins {
     id 'java-lib-conventions'   
 }
 
-project.description = 'Core plugin.'
+rootProject.description = 'Core plugin.'
 
 dependencies {
 	implementation project(":download-plugin-api")
