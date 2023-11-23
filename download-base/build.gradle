@@ -17,8 +17,8 @@ plugins {
     id 'java-lib-conventions' 
 }
 
-
 description = 'Resuming file download-base library for Java.'
+
 
 dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
@@ -29,16 +29,3 @@ dependencies {
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
 }
 
-jar {
-    manifest {
-        attributes(
-                "Class-Path": "com.cs.download",
-                //"Main-Class": "com.cs.download-base.ResumableDownload",
-                "Implementation-Title": project.name,
-                "Implementation-Version": version,
-                "Implementation-Vendor": "Michael Sonst",
-                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
-                "Gradle-Version": GradleVersion.current().toString()
-        )
-    }
-}

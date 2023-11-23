@@ -92,7 +92,7 @@ public class DownloadController {
 
     try {
       // Initiating the download using the DownloadManager.
-      ret = new RequestResult(mDownloadManager.addDownload(new URL(url), cookie, 1, LISTENER), DownloadStatusCode.OK);
+      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie, 1, LISTENER), DownloadStatusCode.OK);
     } catch (Exception e) {
       // Handling exceptions and creating a DownloadResult with an error.
       ret = new RequestResult(null, DownloadStatusCode.ERROR.setMessage(e.getMessage()));
@@ -121,7 +121,7 @@ public class DownloadController {
       @RequestParam(value = "cmd", defaultValue = "") DownloadCommand command) {
 
     LOGGER.debug("REST status called downloadId={}, command={}", downloadId, command);
-RequestResult ret = null;
+    RequestResult ret = null;
 
     switch (command) {
       case DELETE:

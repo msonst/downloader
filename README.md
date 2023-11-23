@@ -55,7 +55,7 @@ Demo client
 	  <version>2.0.0</version>
 	</dependency>
 
-Plugin API to add additional functionality. For example selenium-based actions such as cookie retrieval or link extraction.
+Plugin API to add additional functionality. For example selenium-based actions such as cookie retrieval or link extraction. (to be integrated)
 
 	<dependency>
 	  <groupId>com.corporate-startup</groupId>
@@ -63,13 +63,30 @@ Plugin API to add additional functionality. For example selenium-based actions s
 	  <version>2.0.0</version>
 	</dependency>	
 
-Core plugin functionality such as plugin discovery during runtime
+Core plugin functionality such as plugin discovery during runtime (to be integrated)
 
 	<dependency>
 	  <groupId>com.corporate-startup</groupId>
 	  <artifactId>download-plugin-core</artifactId>
 	  <version>2.0.0</version>
 	</dependency>
+
+### Run the Server
+
+	java -jar download-server-<VERSION>.jar
+	
+### Run the (Demo) Client
+
+	usage: download-client [-a <url>] [-c] -h <host[:Port]> [-o <cookie>] [-s <id>]
+		-a,--add <url>            Add a new download to the queue. Returns downloadId
+		-c,--status               Request the current status
+		-h,--host <host[:Port]>   Address of the host
+		-o,--cookie <cookie>      Pass a cookie during add.
+		-s,--start <id>           Start a download
+	
+	Example: 
+	java -jar download-client-<VERSION>.jar -h localhost:9090 -a "https://github.com/jamesward/play-load-tests/raw/master/public/10mb.txt" -s
+
 
 ### Clone the repository:
 	

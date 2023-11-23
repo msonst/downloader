@@ -20,7 +20,7 @@ plugins {
 description = 'File download-server api.'
 
 dependencies {	
-	implementation project(':download-base')
+	api project(':download-base')
 }
 
 jar {

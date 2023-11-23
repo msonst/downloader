@@ -10,22 +10,9 @@ plugins {
     id 'java-lib-conventions'   
 }
 
-description = 'Core plugin.'
+description = 'Core plugin functionality such as plugin discovery during runtime'
 
 dependencies {
 	implementation project(":download-plugin-api")
 }
 
-jar {
-    manifest {
-        attributes(
-                "Class-Path": "com.cs.download",
-                //"Main-Class": "com.cs.download.ResumableDownload",
-                "Implementation-Title": project.name,
-                "Implementation-Version": version,
-                "Implementation-Vendor": "Michael Sonst",
-                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
-                "Gradle-Version": GradleVersion.current().toString()
-        )
-    }
-}

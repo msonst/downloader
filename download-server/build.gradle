@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 plugins {
-    id 'java-dockerapp-conventions'
+	
+	id 'java-common-conventions'
+
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+    //id "com.palantir.docker"
+	//id "com.palantir.docker-run"        
+	//id "com.palantir.docker-compose"
 }
 
 description = 'Resuming file download-server with REST interface.'
@@ -31,36 +38,70 @@ dependencies {
 	testImplementation "org.junit.platform:junit-platform-launcher"
 	
 	testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
-	
 }
 
+bootJar {
+  archiveFileName = "jarName"
+  launchScript()
+}
+/*
 application {
-    mainClassName  = 'com.cs.download.server.Application' 
-    applicationDefaultJvmArgs = [
- 	  '-Dsun.management.jmxremote.level=FINEST',
-  	  '-Dsun.management.jmxremote.handlers=java.util.logging.ConsoleHandler',
-      '-Djava.util.logging.ConsoleHandler.level=FINEST',
-      '-Dcom.sun.management.jmxremote.local.only=false',
-      '-Dcom.sun.management.jmxremote.ssl=false',
-      '-Dcom.sun.management.jmxremote.authenticate=false',
-      '-Dcom.sun.management.jmxremote.port=9010',
-      '-Dcom.sun.management.jmxremote.rmi.port=9010',
-      '-Djava.rmi.server.hostname=192.168.0.200',
-      '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:4242'
-   ]
+	mainClassName   = 'com.cs.download.server.Application' 
 }
+*/
 
-jar {
-    manifest {
-        attributes(
-                "Class-Path": "com.cs.download-server",
-                "Main-Class": "com.cs.download-server.ResumableDownload",
-                "Implementation-Title": project.name,
-                "Implementation-Version": version,
-                "Implementation-Vendor": "Michael Sonst",
-                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
-                "Gradle-Version": GradleVersion.current().toString()
-        )
+publishing {
+        publications {
+            bootJava(MavenPublication) {
+                artifact tasks.named("bootJar")
+
+                println "Publishing ${project.name}"
+                println "Publishing ${components.java}"
+
+                pom {
+                    name = "${project.name}"
+                    description = "${project.description}"
+                    url = "https://github.com/msonst/downloader"
+                    licenses {
+                        license {
+                            name = 'Apache 2.0 License'
+                            url = "https://github.com/msonst/downloader/blob/main/License"
+                            distribution = 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'msonst'
+                            name = 'Michael Sonst'
+                            email = 'code1@corporate-startup.com'
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:git://github.com/msonst/downloader.git"
+                        developerConnection = "scm:git:ssh://git@github.com:msonst/downloader.git"
+                        url = "https://github.com/msonst/downloader/tree/main"
+                    }
+                }
+            }
+        }
+        repositories {
+            // check what will be published with: ./gradlew publishAllPublicationsToLocalCheckRepository
+            maven {
+                name = "LocalCheck"
+                url = uri("$buildDir/repos/LocalCheck")
+            }
+        
+            maven {
+                name = "OSSRH"
+                if (admin) {
+                    credentials {
+                        username = System.getenv("MAVEN_USERNAME")
+                        password = System.getenv("MAVEN_PASSWORD")
+                    }
+                }
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
     }
-}
-
