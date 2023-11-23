@@ -17,7 +17,7 @@ plugins {
     id 'java-dockerapp-conventions'
 }
 
-rootProject.description = 'Resuming file download-server with REST interface.'
+description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
     implementation project(':download-base')

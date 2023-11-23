@@ -110,8 +110,8 @@ publishing {
             from components.java
  
             pom {
-                name = "${rootProject.name}"
-                description = rootProject.description
+                name = "${project.name}"
+                description = "${project.name}"
                 url = "https://github.com/msonst/downloader"
                 licenses {
                     license {

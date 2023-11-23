@@ -17,7 +17,7 @@ plugins {
     id 'java-app-conventions'
 }
 
-rootProject.description = 'File download-client.'
+project.description = 'File download-client.'
 
 dependencies {	
 	implementation project(':download-server-api')
