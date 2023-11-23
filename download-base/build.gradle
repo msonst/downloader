@@ -18,7 +18,7 @@ plugins {
 }
 
 
-rootProject.description = 'Resuming file download-base library for Java.'
+project.description = 'Resuming file download-base library for Java.'
 
 dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'

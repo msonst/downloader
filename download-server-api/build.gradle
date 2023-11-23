@@ -17,7 +17,7 @@ plugins {
     id 'java-lib-conventions'
 }
 
-rootProject.description = 'File download-server api.'
+project.description = 'File download-server api.'
 
 dependencies {	
 	implementation project(':download-base')
