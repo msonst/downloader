@@ -30,8 +30,10 @@ dependencies {
     implementation project(':download-base')
     implementation project(':download-server-api')
 
-	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
+	implementation project(':download-plugin-api')
+	implementation project(':download-plugin-core')
 
+	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
 	testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"
 	
 	testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"

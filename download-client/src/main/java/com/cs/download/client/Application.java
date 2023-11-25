@@ -35,9 +35,11 @@ public class Application {
     options.addOption(Option.builder("h").desc("Address of the host").required(true).hasArg().argName("host[:Port]").longOpt("host").build());
     options.addOption(Option.builder("a").desc("Add a new download to the queue. Returns downloadId").required(false).hasArg().argName("url")
         .longOpt("add").build());
-    options.addOption(Option.builder("c").desc("Request the current status").required(false).optionalArg(true).argName("id").longOpt("status").build());
+    options
+        .addOption(Option.builder("c").desc("Request the current status").required(false).optionalArg(true).argName("id").longOpt("status").build());
     options.addOption(Option.builder("s").desc("Start a download").required(false).optionalArg(true).hasArg().argName("id").longOpt("start").build());
     options.addOption(Option.builder("o").desc("Pass a cookie during add.").required(false).hasArg().argName("cookie").longOpt("cookie").build());
+    options.addOption(Option.builder("e").desc("Get the endpoints.").required(false).longOpt("endpoints").build());
 
     mHeader = "";
     String footer = "(c) 2023 Michael sonst";
@@ -97,6 +99,10 @@ public class Application {
           case 'o': //COOKIE
             cookie = option.getValue();
             break;
+          case 'e': {//ENDPOINTS
+            System.out.println("Result" + RestAssured.given().get(new URL(strUrl + "/introspect/endpoints")).asPrettyString());
+            break;
+          }
           default: {
             throw new IllegalArgumentException("Unexpected value: " + (char) option.getId());
           }

@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cs.download.plugin.spi;
-
-import com.cs.download.plugin.api.PluginInfo;
-
-/**
- * Interface for a provider that supplies information about a service factory.
- */
-public interface ServiceFactoryProvider {
-
-  /**
-   * Gets information about the service factory provided by this provider.
-   *
-   * @return Information about the service factory.
-   */
-  PluginInfo getPluginInfo();
+plugins {
+    id 'java-lib-conventions' 
 }
+
+description = 'Utilities for downloading.'
+
+dependencies {
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+}
+

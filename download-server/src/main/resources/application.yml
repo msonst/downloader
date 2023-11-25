@@ -12,6 +12,7 @@ proxy:
   port: 8118  
     
 app:
+  pluginDir: "./plugin"
   outpath: "./data"
   parallel_downloads: 10
   
@@ -22,3 +23,6 @@ spring:
     active: dev
  
   
+springdoc:
+  api-docs:
+    path: "/api-docs"

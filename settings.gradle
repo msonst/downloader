@@ -20,4 +20,4 @@ plugins {
 
 rootProject.name = 'download'
 
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client')
+include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client', 'download-utils', 'download-plugin-link-extractor')

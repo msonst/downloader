@@ -34,5 +34,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public record DownloaderConfiguration(@Value("${proxy.host}") String proxyHost, @Value("${proxy.port}") int proxyPort,
-    @Value("${app.outpath}") String outpath, @Value("${app.parallel_downloads}") int parallelDownloads) {
+    @Value("${app.outpath}") String outpath, @Value("${app.parallel_downloads}") int parallelDownloads,
+    @Value("${app.pluginDir}") String pluginDir) {
 }

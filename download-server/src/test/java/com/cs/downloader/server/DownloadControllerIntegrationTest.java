@@ -49,10 +49,4 @@ class DownloadControllerIntegrationTest {
     assertNotNull(status.downloadId());
     assertNotNull(status.status());
   }
-
-  //	    @Test
-  //	    public void givenAuthentication_whenAccessHome_thenOK() {
-  //	        int statusCode = RestAssured.given().auth().basic("john", "123").get("http://localhost:" + port).statusCode();
-  //	        assertEquals(HttpStatus.OK.value(), statusCode);
-  //	    }
 }

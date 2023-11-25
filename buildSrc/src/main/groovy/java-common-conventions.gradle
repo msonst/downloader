@@ -20,6 +20,8 @@ plugins {
 	id 'signing'
 	
 	id "com.github.ben-manes.versions"
+    id "org.barfuin.gradle.taskinfo"
+    id "io.swagger.core.v3.swagger-gradle-plugin"
 }
 
 repositories {    
@@ -160,4 +162,11 @@ afterEvaluate{
             }
         }
     }
+
 }
+
+configurations.all {
+   exclude group:"commons-logging", module: "commons-logging"
+}
+
+

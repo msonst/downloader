@@ -38,9 +38,9 @@ import com.cs.download.plugin.api.ServiceResult;
 /**
  * A registry for managing and starting services provided by plugins.
  */
-public class ServiceRegistry {
+public class PluginServiceRegistry {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PluginServiceRegistry.class);
 
   private ExecutorService mThreadPool;
   private final Map<String, Wrapper> mServices = new HashMap<>();
@@ -97,7 +97,7 @@ public class ServiceRegistry {
   /**
    * Constructs a ServiceRegistry with a cached thread pool.
    */
-  public ServiceRegistry() {
+  public PluginServiceRegistry() {
     mThreadPool = Executors.newCachedThreadPool();
   }
 
@@ -107,7 +107,7 @@ public class ServiceRegistry {
    * @param path The path to the plugin.
    * @return The ServiceRegistry instance for method chaining.
    */
-  public ServiceRegistry addPluginPath(String path) {
+  public PluginServiceRegistry addPluginPath(String path) {
     PluginDiscovery pluginDiscovery = new PluginDiscovery(path);
     mPluginDiscoveries.add(pluginDiscovery);
 

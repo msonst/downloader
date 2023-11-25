@@ -32,8 +32,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,12 +39,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriver.Options;
 
 import com.cs.download.DownloadStatusCode;
-import com.cs.download.DownloadUtils;
 import com.cs.download.ResumableDownload;
 import com.cs.download.event.DownloadProgressUpdateEvent;
 import com.cs.download.event.DownloadStatusListener;
@@ -112,27 +106,6 @@ class ResumableDownloadTest {
     ret &= shouldPattern.equals(content);
 
     return ret;
-  }
-
-  /**
-   * Tests the extractCookie method of DownloadUtils.
-   *
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws ExecutionException
-   */
-  @Test
-  void testExtractCookie() throws IOException, InterruptedException, ExecutionException {
-    Set<Cookie> cookies = new HashSet<Cookie>();
-    cookies.add(new Cookie("C11", "v1", "some/path"));
-
-    WebDriver mockDriver = mock(WebDriver.class);
-    Options mockOptions = mock(Options.class);
-    when(mockDriver.manage()).thenReturn(mockOptions);
-    when(mockOptions.getCookies()).thenReturn(cookies);
-
-    String cookie = DownloadUtils.extractCookie(mockDriver);
-    Assertions.assertEquals(cookie, COOKIE);
   }
 
   /**
