@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 plugins {
-	id 'java-app-conventions'
+	id 'application'    
 }
 
 description='(Demo) File download-client.'
 
 dependencies {	
+	implementation project(':download-base')
 	implementation project(':download-server-api')
 	
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
@@ -29,6 +30,7 @@ dependencies {
 	implementation "io.rest-assured:rest-assured:${restassuredversion}"
 	implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
+
 application {
 	mainClassName   = 'com.cs.download.client.Application' 
 }

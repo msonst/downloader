@@ -1,7 +1,8 @@
 .gradle*
-*/build/*
+**/build/*
 *.settings*
 */bin/*
 *.classpath*
 *.project*
 *buildProfile*
+download-server/plugin/**.jar

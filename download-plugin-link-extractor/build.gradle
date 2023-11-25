@@ -17,9 +17,9 @@ buildscript {
 }
 
 plugins {
-    id 'java-lib-conventions'    
+	id 'java-library'
+   
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-
 }
 
 description = 'File download-server api.'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 plugins {
-    id 'java-lib-conventions' 
+    id 'java-library'
 }
 
 description = 'Plugin API to add additional functionality. For example selenium-based actions such as cookie retrieval or link extraction.'

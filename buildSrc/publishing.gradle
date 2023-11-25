@@ -1,0 +1,71 @@
+//apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+
+ext.admin = System.getenv("MAVEN_USERNAME")
+
+signing {
+    required { admin }
+    def signingKey = System.getenv("GPG_SIGNING_KEY")
+    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications
+}
+
+afterEvaluate{
+	publishing {
+	    publications {
+	        mavenJava(MavenPublication) {
+	            from components.java
+	
+	            pom {
+	                name = "${project.name}"
+	                description = "${project.description}"
+	                url = "https://github.com/msonst/downloader"
+	                licenses {
+	                    license {
+	                        name = 'Apache 2.0 License'
+	                        url = "https://github.com/msonst/downloader/blob/main/License"
+	                        distribution = 'repo'
+	                    }
+	                }
+	                developers {
+	                    developer {
+	                        id = 'msonst'
+	                        name = 'Michael Sonst'
+	                        email = 'code1@corporate-startup.com'
+	                    }
+	                }
+	                scm {
+	                    connection = "scm:git:git://github.com/msonst/downloader.git"
+	                    developerConnection = "scm:git:ssh://git@github.com:msonst/downloader.git"
+	                    url = "https://github.com/msonst/downloader/tree/main"
+	                }
+	            }
+	        }
+	    }
+	    repositories {
+	        // Local Maven repository for checking what will be published
+	        maven {
+	            name = "LocalCheck"
+	            url = uri("$buildDir/repos/LocalCheck")
+	        }
+	
+	        // Remote Maven repository (Sonatype OSSRH)
+	        maven {
+	            name = "OSSRH"
+	            if (admin) {
+	                credentials {
+	                    username = System.getenv("MAVEN_USERNAME")
+	                    password = System.getenv("MAVEN_PASSWORD")
+	                }
+	            }
+	            def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+	            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+	            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+	        }
+	    }
+	}
+}
+//publish.dependsOn assemble

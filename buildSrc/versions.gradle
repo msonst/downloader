@@ -1,0 +1,6 @@
+ext['junitjupiterversion'] = '5.7.1'
+ext['springbootversion'] = '3.1.4'
+ext['slf4japiversion'] = '2.0.9'
+ext['restassuredversion'] = '5.3.2'
+ext['mockitoversion'] = '5.7.0'
+ext['springbootgradleversion'] = '3.1.4'

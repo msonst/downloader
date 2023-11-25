@@ -7,7 +7,7 @@
  */
 
 plugins {
-    id 'java-lib-conventions'   
+	id 'java-library'
 }
 
 description = 'Core plugin functionality such as plugin discovery during runtime'

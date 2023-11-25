@@ -14,37 +14,12 @@
  * limitations under the License.
  */
 plugins {
-	id 'java'
-	id 'maven-publish'  
-	id 'eclipse'
-	id 'signing'
-	
-	id "com.github.ben-manes.versions"
-    id "org.barfuin.gradle.taskinfo"
-    id "io.swagger.core.v3.swagger-gradle-plugin"
+        id 'java'
+        id 'eclipse'
 }
 
-repositories {    
-    gradlePluginPortal()
-
+repositories {
     mavenCentral()
-}
-
-group = 'com.corporate-startup'
-version = '2.0.0'
-
-ext['junitjupiterversion'] = '5.7.1'
-ext['springbootversion'] = '3.1.4'
-ext['slf4japiversion'] = '2.0.9'
-ext['restassuredversion'] = '5.3.2'
-ext['mockitoversion'] = '5.7.0'
-
-dependencies {       
-    implementation "org.slf4j:slf4j-api:${slf4japiversion}"
-	
-	testImplementation "org.junit.jupiter:junit-jupiter-api:${junitjupiterversion}"
-	testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitjupiterversion}"
-	testImplementation "org.mockito:mockito-core:${mockitoversion}"
 }
 
 sourceSets {
@@ -59,30 +34,6 @@ sourceSets {
         }
     }
 }
-if (hasProperty('buildScan')) {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
-tasks.register('createProperties') {
-    doLast {
-        new File("$projectDir/src/main/resources/version.properties").withWriter { w ->
-            Properties p = new Properties()
-            p['version'] = project.version.toString()
-            p.store w, null
-        }
-    }
-}
-	 
-classes {
-    dependsOn createProperties
-}
 
 tasks.withType(Jar){
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -94,79 +45,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(20)
     }
-}
-
-ext.admin = System.getenv("MAVEN_USERNAME")
-
-signing {
-    required { admin }
-    def signingKey = System.getenv("GPG_SIGNING_KEY")
-    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign publishing.publications
-}
-
-afterEvaluate{
-  publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-
-                println "Publishing ${project.name}"
-                println "Publishing ${components.java}"
-
-                pom {
-                    name = "${project.name}"
-                    description = "${project.description}"
-                    url = "https://github.com/msonst/downloader"
-                    licenses {
-                        license {
-                            name = 'Apache 2.0 License'
-                            url = "https://github.com/msonst/downloader/blob/main/License"
-                            distribution = 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'msonst'
-                            name = 'Michael Sonst'
-                            email = 'code1@corporate-startup.com'
-                        }
-                    }
-                    scm {
-                        connection = "scm:git:git://github.com/msonst/downloader.git"
-                        developerConnection = "scm:git:ssh://git@github.com:msonst/downloader.git"
-                        url = "https://github.com/msonst/downloader/tree/main"
-                    }
-                }
-            }
-        }
-        repositories {
-            // check what will be published with: ./gradlew publishAllPublicationsToLocalCheckRepository
-            maven {
-                name = "LocalCheck"
-                url = uri("$buildDir/repos/LocalCheck")
-            }
-        
-            maven {
-                name = "OSSRH"
-                if (admin) {
-                    credentials {
-                        username = System.getenv("MAVEN_USERNAME")
-                        password = System.getenv("MAVEN_PASSWORD")
-                    }
-                }
-                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            }
-        }
-    }
-
-}
-
-configurations.all {
-   exclude group:"commons-logging", module: "commons-logging"
 }
 
 

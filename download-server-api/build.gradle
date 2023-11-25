@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 plugins {
-    id 'java-lib-conventions'
+	id 'java-library'
 }
 
 description = 'File download-server api.'
 
 dependencies {	
-	api project(':download-base')
-}
-
-jar {
-    manifest {
-        attributes(
-                "Class-Path": "com.cs.download.client",
-                "Main-Class": "com.cs.download.client.Application",
-                "Implementation-Title": project.name,
-                "Implementation-Version": version,
-                "Implementation-Vendor": "Michael Sonst",
-                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
-                "Gradle-Version": GradleVersion.current().toString()
-        )
-    }
+	implementation project(':download-base')
 }
 

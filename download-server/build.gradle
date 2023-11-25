@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 plugins {
-	
-	id 'java-common-conventions'
-
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
     //id "com.palantir.docker"
@@ -43,67 +40,11 @@ dependencies {
 }
 
 bootJar {
-  archiveFileName = "jarName"
+  //archiveFileName = "${project.name}-${project.version}.jar"
   launchScript()
 }
-/*
-application {
-	mainClassName   = 'com.cs.download.server.Application' 
+
+jar{
+    archiveClassifier=''
+    //enabled = false
 }
-*/
-
-publishing {
-        publications {
-            bootJava(MavenPublication) {
-                artifact tasks.named("bootJar")
-
-                println "Publishing ${project.name}"
-                println "Publishing ${components.java}"
-
-                pom {
-                    name = "${project.name}"
-                    description = "${project.description}"
-                    url = "https://github.com/msonst/downloader"
-                    licenses {
-                        license {
-                            name = 'Apache 2.0 License'
-                            url = "https://github.com/msonst/downloader/blob/main/License"
-                            distribution = 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'msonst'
-                            name = 'Michael Sonst'
-                            email = 'code1@corporate-startup.com'
-                        }
-                    }
-                    scm {
-                        connection = "scm:git:git://github.com/msonst/downloader.git"
-                        developerConnection = "scm:git:ssh://git@github.com:msonst/downloader.git"
-                        url = "https://github.com/msonst/downloader/tree/main"
-                    }
-                }
-            }
-        }
-        repositories {
-            // check what will be published with: ./gradlew publishAllPublicationsToLocalCheckRepository
-            maven {
-                name = "LocalCheck"
-                url = uri("$buildDir/repos/LocalCheck")
-            }
-        
-            maven {
-                name = "OSSRH"
-                if (admin) {
-                    credentials {
-                        username = System.getenv("MAVEN_USERNAME")
-                        password = System.getenv("MAVEN_PASSWORD")
-                    }
-                }
-                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            }
-        }
-    }

@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 plugins {
-    id("groovy-gradle-plugin")
+    id 'groovy-gradle-plugin'
 }
+
+apply from: file("./versions.gradle")
 
 repositories {
     gradlePluginPortal() // so that external plugins can be resolved in dependencies section
 }
 
-ext['springbootgradleversion'] = '3.1.4'
-
-dependencies {    
+dependencies {   
+    implementation 'org.codehaus.groovy:groovy-all:3.0.17'    
+    implementation gradleApi()
+      
     implementation "org.springframework.boot:spring-boot-gradle-plugin:${springbootgradleversion}"
     implementation "com.github.ben-manes:gradle-versions-plugin:0.46.0"
     implementation "com.palantir.gradle.docker:gradle-docker:0.35.0"
     
     implementation 'org.barfuin.gradle.taskinfo:gradle-taskinfo:2.1.0'
-implementation "io.swagger.core.v3:swagger-gradle-plugin:2.2.19"
+	implementation "io.swagger.core.v3:swagger-gradle-plugin:2.2.19"
 
     testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
     testImplementation "org.spockframework:spock-core"

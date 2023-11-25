@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 plugins {
-    id 'java-lib-conventions' 
+	id 'java-library'
 }
 
 description = 'Resuming file download-base library for Java.'
