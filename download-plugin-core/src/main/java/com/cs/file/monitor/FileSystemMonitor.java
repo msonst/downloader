@@ -75,6 +75,7 @@ public class FileSystemMonitor implements Runnable {
         poll = pollEvents(watchService);
       }
     } catch (IOException | InterruptedException | ClosedWatchServiceException e) {
+      e.printStackTrace();
       Thread.currentThread().interrupt();
     }
   }

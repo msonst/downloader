@@ -21,7 +21,8 @@ subprojects {
 
     dependencies {
         implementation "org.slf4j:slf4j-api:2.0.9"
-        
+       	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
+ 
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
         testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
         testImplementation "org.mockito:mockito-core:5.7.0"

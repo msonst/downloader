@@ -6,3 +6,6 @@
 *.project*
 *buildProfile*
 download-server/plugin/**.jar
+/build/
+download-server/data/10mb.txt
+download-plugin-4kvod/

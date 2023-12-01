@@ -36,10 +36,25 @@ class DownloadControllerIntegrationTest {
   }
 
   @Test
-  public void givenDownload_whenRequest_thenDownloadStatusStarted() {
+  public void givenDownload_whenRequestWithCookie_thenDownloadStatusStarted() {
 
     RequestResult result = RestAssured.given().param("url", "https://github.com/jamesward/play-load-tests/raw/master/public/10mb.txt")
         .param("cookie", "cookie").get("http://localhost:" + port + "/add").as(RequestResult.class);
+    assertNotNull(result.downloadId());
+    assertNotNull(result.status());
+
+    RequestSpecification param = RestAssured.given().param("downloadId", result.downloadId());
+
+    RequestResult status = param.get("http://localhost:" + port + "/status").as(RequestResult.class);
+    assertNotNull(status.downloadId());
+    assertNotNull(status.status());
+  }
+
+  @Test
+  public void givenDownload_whenRequestNoCookie_thenDownloadUsingPluginLogin() {
+
+    RequestResult result = RestAssured.given().param("url", "https://github.com/jamesward/play-load-tests/raw/master/public/10mb.txt")
+        .get("http://localhost:" + port + "/add").as(RequestResult.class);
     assertNotNull(result.downloadId());
     assertNotNull(result.status());
 

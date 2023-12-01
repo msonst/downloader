@@ -18,6 +18,6 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
 
-rootProject.name = 'download'
+rootProject.name = 'downloader'
 
-include('download-base', 'download-plugin-api', 'download-plugin-core', 'download-server-api', 'download-server', 'download-client', 'download-utils', 'download-plugin-link-extractor')
+include(':download-base', ':download-plugin-api', ':download-plugin-core', ':download-plugin-defaults', ':download-server-api', ':download-server', ':download-client', ':download-utils', ':download-plugin-4kvod', ':download-model')

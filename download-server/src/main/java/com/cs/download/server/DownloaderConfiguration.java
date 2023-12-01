@@ -15,8 +15,8 @@
  */
 package com.cs.download.server;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration class for the file downloader.
@@ -27,13 +27,61 @@ import org.springframework.stereotype.Component;
  *
  * Constructs a new {@code DownloaderConfiguration} record.
  *
- * @param proxyHost           The proxy host to be used for downloads.
- * @param proxyPort           The proxy port to be used for downloads.
- * @param outpath             The path where downloaded files will be saved.
- * @param parallelDownloads   The maximum number of parallel downloads allowed.
  */
-@Component
-public record DownloaderConfiguration(@Value("${proxy.host}") String proxyHost, @Value("${proxy.port}") int proxyPort,
-    @Value("${app.outpath}") String outpath, @Value("${app.parallel_downloads}") int parallelDownloads,
-    @Value("${app.pluginDir}") String pluginDir) {
+@Configuration
+@ConfigurationProperties(prefix = "app")
+public class DownloaderConfiguration {
+
+  private String mProxyType;
+  private String mProxyHost;
+  private int mProxyPort;
+  private String mOutPath;
+  private int mParallelDownloads;
+  private int mThreadsPerDownload;
+  private String mPersistFile;
+  
+  public String getProxyType() {
+    return mProxyType;
+  }
+  public void setProxyType(String proxyType) {
+    mProxyType = proxyType;
+  }
+  public String getProxyHost() {
+    return mProxyHost;
+  }
+  public void setProxyHost(String proxyHost) {
+    mProxyHost = proxyHost;
+  }
+  public int getProxyPort() {
+    return mProxyPort;
+  }
+  public void setProxyPort(int proxyPort) {
+    mProxyPort = proxyPort;
+  }
+  public String getOutPath() {
+    return mOutPath;
+  }
+  public void setOutPath(String outPath) {
+    mOutPath = outPath;
+  }
+  public int getParallelDownloads() {
+    return mParallelDownloads;
+  }
+  public void setParallelDownloads(int parallelDownloads) {
+    mParallelDownloads = parallelDownloads;
+  }
+  public int getThreadsPerDownload() {
+    return mThreadsPerDownload;
+  }
+  public String getPersistFile() {
+    return mPersistFile;
+  }
+  public void setThreadsPerDownload(int threadsPerDownload) {
+    mThreadsPerDownload = threadsPerDownload;
+  }
+  public void setPersistFile(String persistFile) {
+    mPersistFile = persistFile;
+  }
+
+
 }

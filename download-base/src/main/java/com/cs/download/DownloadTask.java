@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cs.download.entity.DownloadEntity;
 import com.cs.download.event.DownloadStatusListener;
 
 /**
@@ -40,30 +41,13 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DownloadTask.class);
 
-  private final URL mURL;
-  private final String mCookie;
   private final DownloadStatusListener mDownloadStatusListener;
   private final Proxy mProxy;
-  private final String mSavePath;
-  private final int mThreadCount;
+  private DownloadEntity mDownload;
 
-  /**
-   * Constructs a new {@code DownloadTask} with the specified parameters.
-   *
-   * @param url                      The URL of the file to download.
-   * @param cookie                   The cookie to use for authentication.
-   * @param proxy                    The proxy to be used for the download.
-   * @param savePath                 The path where the downloaded file will be saved.
-   * @param threadCount              The number of threads to use for downloading.
-   * @param downloadStatusListener  The listener for download status updates.
-   */
-  public DownloadTask(final URL url, final String cookie, final Proxy proxy, final String savePath, final int threadCount,
-      final DownloadStatusListener downloadStatusListener) {
-    mURL = url;
-    mCookie = cookie;
+  public DownloadTask(DownloadEntity downloadEntity, Proxy proxy, DownloadStatusListener downloadStatusListener) {
+    mDownload = downloadEntity;
     mProxy = new Proxy(proxy.type(), proxy.address());
-    mSavePath = savePath;
-    mThreadCount = threadCount;
     mDownloadStatusListener = downloadStatusListener;
   }
 
@@ -77,10 +61,11 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
   public DownloadStatusCode call() throws Exception {
     LOGGER.debug("Started {}", this);
 
-    ResumableDownload download = new ResumableDownload(mThreadCount, mProxy, mDownloadStatusListener);
+    ResumableDownload download = new ResumableDownload(mDownload.getThreadCount(), mProxy, mDownloadStatusListener);
 
     try {
-      return download.downloadSync(mURL, mSavePath, mCookie);
+      URL url = new URL(mDownload.getUrl());
+      return download.downloadSync(url, mDownload.getFilePath(), mDownload.getCookie());
     } catch (IOException | InterruptedException | ExecutionException e) {
       LOGGER.error("Error during download", e);
       return DownloadStatusCode.ERROR;
@@ -94,16 +79,15 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
    */
   @Override
   public String toString() {
-    return "DownloadTask [mURL=" + mURL + ", mCookie=" + mCookie + ", mDownloadStatusListener=" + mDownloadStatusListener + ", mProxy=" + mProxy
-        + ", mSavePath=" + mSavePath + ", mThreadCount=" + mThreadCount + "]";
+    return "DownloadTask [mDownload=" + mDownload + "]";
   }
 
-  /**
-   * Gets the URL of the file to be downloaded.
-   *
-   * @return The URL of the file to be downloaded.
-   */
-  public URL getUrl() {
-    return mURL;
-  }
+//  /**
+//   * Gets the URL of the file to be downloaded.
+//   *
+//   * @return The URL of the file to be downloaded.
+//   */
+//  public URL getUrl() {
+//    return new URL(mDownload.getUrl());
+//  }
 }

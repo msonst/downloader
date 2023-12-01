@@ -15,9 +15,7 @@
  */
 package com.cs.download.server.api;
 
-import java.util.UUID;
-
 import com.cs.download.DownloadStatusCode;
 
-public record RequestResult(UUID downloadId, DownloadStatusCode status) {
+public record RequestResult(Long downloadId, DownloadStatusCode status) {
 }

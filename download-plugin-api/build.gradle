@@ -19,3 +19,7 @@ plugins {
 
 description = 'Plugin API to add additional functionality. For example selenium-based actions such as cookie retrieval or link extraction.'
 
+dependencies {
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+}
+

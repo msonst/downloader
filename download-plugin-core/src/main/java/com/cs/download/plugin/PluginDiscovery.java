@@ -21,8 +21,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.stereotype.Service;
 
-import com.cs.download.plugin.api.PluginInfo;
+import com.cs.download.api.plugin.spi.PluginInfo;
 import com.cs.file.monitor.FileAdapter;
 import com.cs.file.monitor.FileEvent;
 import com.cs.file.monitor.FileSystemMonitor;
@@ -31,21 +34,20 @@ import com.cs.file.monitor.FileSystemMonitor;
  * Utility class for discovering and monitoring plugins in a specified
  * directory.
  */
+@Service
+@ConfigurationProperties(prefix = "plugin")
 public class PluginDiscovery {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PluginDiscovery.class);
-  private File mPluginDir;
   private FileSystemMonitor mMonitor;
   private List<PluginStateChangeListener> mListeners = new ArrayList<>();
 
   /**
    * Constructs a new PluginDiscovery instance with the specified directory name.
-   *
-   * @param dirName The name of the directory to monitor for plugins.
    */
-  public PluginDiscovery(String dirName) {
-    mPluginDir = new File(dirName);
-    mMonitor = new FileSystemMonitor(mPluginDir);
+  @ConstructorBinding
+  public PluginDiscovery(PluginConfig pluginConfig) {
+    mMonitor = new FileSystemMonitor(new File(pluginConfig.getMonitoringPath()));
   }
 
   /**

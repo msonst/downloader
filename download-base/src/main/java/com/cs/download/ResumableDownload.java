@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cs.download.event.DownloadProgressUpdateEvent;
 import com.cs.download.event.DownloadStatusListener;
 import com.cs.download.event.PartProgressUpdateEvent;
 
@@ -81,7 +82,9 @@ public class ResumableDownload {
     long fileSize = -1;
 
     LOGGER.info("Starting fileUrl={}, saveFileName={}, numThreads={}, cookie={}, proxy={}", url, saveFileName, mNumThreads, cookie, mProxy);
-
+    
+    CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.INITIALIZED)));
+        
     for (int i = 0; (i < 5) && (fileSize < 0); i++) {
 
       HttpURLConnection connection = (HttpURLConnection) ((null != mProxy) ? url.openConnection(mProxy) : url.openConnection());
@@ -137,6 +140,7 @@ public class ResumableDownload {
 
       running.add(pool.submit(new PartDownloadTask(this, url, saveFileName + "." + i, startRange, endRange, i, cookie, mProxy)));
     }
+    CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.DOWNLOADING)));
 
     pool.shutdown();
     pool.awaitTermination(1, TimeUnit.HOURS);
@@ -151,12 +155,19 @@ public class ResumableDownload {
       return null;
     }).filter(p -> (null != p && p.responseCode().isOK())).collect(Collectors.toList());
 
-    if (finished.size() == mNumThreads) {
+
+    
+    if (finished.size() == mNumThreads) {   
+      CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.MERGING)));
+
       mergeFiles(saveFileName, mNumThreads);
       LOGGER.debug("Download complete url={}", url);
+      CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.COMPLETE)));
+
       return DownloadStatusCode.COMPLETE;
     } else {
       LOGGER.debug("Missing parts. Finished are {}", finished);
+      CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.ERROR)));
       return DownloadStatusCode.ERROR;
     }
   }

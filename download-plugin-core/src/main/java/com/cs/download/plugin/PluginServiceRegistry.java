@@ -28,23 +28,27 @@ import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.stereotype.Service;
 
-import com.cs.download.plugin.api.PluginInfo;
-import com.cs.download.plugin.api.Service;
-import com.cs.download.plugin.api.ServiceFactory;
-import com.cs.download.plugin.api.ServiceInfo;
-import com.cs.download.plugin.api.ServiceResult;
+import com.cs.download.api.plugin.lifecyccle.PluginLifecycle;
+import com.cs.download.api.plugin.lifecyccle.PluginLifecycleResult;
+import com.cs.download.api.plugin.service.ServiceFactory;
+import com.cs.download.api.plugin.service.ServiceInfo;
+import com.cs.download.api.plugin.spi.PluginInfo;
 
 /**
  * A registry for managing and starting services provided by plugins.
  */
+@Service
 public class PluginServiceRegistry {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PluginServiceRegistry.class);
 
   private ExecutorService mThreadPool;
   private final Map<String, Wrapper> mServices = new HashMap<>();
-  private List<PluginDiscovery> mPluginDiscoveries = new ArrayList<PluginDiscovery>();
+
+  private PluginDiscovery mPluginDiscovery;
 
   /**
    * Inner class representing a wrapper for a service provided by a plugin.
@@ -53,7 +57,7 @@ public class PluginServiceRegistry {
 
     private ServiceFactory mServiceFactory;
     private ServiceInfo mServiceInfo;
-    private List<Future<ServiceResult>> mServiceInstances = new ArrayList<Future<ServiceResult>>();
+    private List<Future<PluginLifecycleResult>> mServiceInstances = new ArrayList<Future<PluginLifecycleResult>>();
 
     /**
      * Constructs a Wrapper for a service.
@@ -89,7 +93,7 @@ public class PluginServiceRegistry {
      *
      * @param futureServiceResult The Future representing the service instance.
      */
-    public void addServiceInstance(Future<ServiceResult> futureServiceResult) {
+    public void addServiceInstance(Future<PluginLifecycleResult> futureServiceResult) {
       mServiceInstances.add(futureServiceResult);
     }
   }
@@ -97,21 +101,12 @@ public class PluginServiceRegistry {
   /**
    * Constructs a ServiceRegistry with a cached thread pool.
    */
-  public PluginServiceRegistry() {
+  @ConstructorBinding
+  public PluginServiceRegistry(PluginDiscovery pluginDiscovery) {
+    mPluginDiscovery = pluginDiscovery;
     mThreadPool = Executors.newCachedThreadPool();
-  }
 
-  /**
-   * Adds a plugin path for discovering services.
-   *
-   * @param path The path to the plugin.
-   * @return The ServiceRegistry instance for method chaining.
-   */
-  public PluginServiceRegistry addPluginPath(String path) {
-    PluginDiscovery pluginDiscovery = new PluginDiscovery(path);
-    mPluginDiscoveries.add(pluginDiscovery);
-
-    pluginDiscovery.addListener(new PluginAdapter() {
+    mPluginDiscovery.addListener(new PluginAdapter() {
 
       @Override
       public void onModified(PluginEvent event) {
@@ -135,17 +130,10 @@ public class PluginServiceRegistry {
         }
       }
     });
-
-    return this;
   }
 
-  /**
-   * Starts the plugin discoveries and returns whether they all started successfully.
-   *
-   * @return True if all plugin discoveries started successfully, false otherwise.
-   */
-  public boolean start() {
-    return mPluginDiscoveries.parallelStream().map(d -> d.start()).allMatch(r -> r);
+  public void startMonitoring() {
+    mPluginDiscovery.start();
   }
 
   /**
@@ -167,10 +155,11 @@ public class PluginServiceRegistry {
   public void startService(String name) throws InterruptedException, ExecutionException {
     Wrapper wrapper = mServices.get(name);
 
-    Service service = wrapper.getServiceFactory().getService(wrapper.getServiceInfo());
+    PluginLifecycle service = wrapper.getServiceFactory().getService(wrapper.getServiceInfo());
 
     wrapper.addServiceInstance(mThreadPool.submit(() -> service.start()));
 
     LOGGER.debug("started");
   }
+
 }

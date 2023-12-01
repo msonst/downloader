@@ -338,7 +338,9 @@ public class DownloadStatusCode {
   public static final DownloadStatusCode INCOMPLETE = new DownloadStatusCode(-2);
 
   public static final DownloadStatusCode INITIALIZED = new DownloadStatusCode(-3);
-  public static final DownloadStatusCode DOWNLOADING = new DownloadStatusCode(-3);
+  public static final DownloadStatusCode DOWNLOADING = new DownloadStatusCode(-4);
+
+  public static final DownloadStatusCode MERGING = new DownloadStatusCode(-5);
 
   private int mResponseCode;
 
@@ -387,7 +389,7 @@ public class DownloadStatusCode {
    */
   @JsonIgnore
   public boolean isOK() {
-    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getRespponseCode()) && ("" == mMessage || null == mMessage);
+    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getStatusCode()) && ("" == mMessage || null == mMessage);
   }
 
   /**
@@ -395,7 +397,7 @@ public class DownloadStatusCode {
    *
    * @return The HTTP response code.
    */
-  private int getRespponseCode() {
+  public int getStatusCode() {
     return mResponseCode;
   }
 
@@ -419,4 +421,8 @@ public class DownloadStatusCode {
     return (null == mMessage) ? "" : mMessage;
   }
 
+  public boolean isDone() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

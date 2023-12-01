@@ -1,8 +1,8 @@
 package com.cs.download.client;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -35,11 +35,15 @@ public class Application {
     options.addOption(Option.builder("h").desc("Address of the host").required(true).hasArg().argName("host[:Port]").longOpt("host").build());
     options.addOption(Option.builder("a").desc("Add a new download to the queue. Returns downloadId").required(false).hasArg().argName("url")
         .longOpt("add").build());
-    options
-        .addOption(Option.builder("c").desc("Request the current status").required(false).optionalArg(true).argName("id").longOpt("status").build());
+    options.addOption(
+        Option.builder("c").desc("Request the current download status").required(false).optionalArg(true).argName("id").longOpt("status").build());
     options.addOption(Option.builder("s").desc("Start a download").required(false).optionalArg(true).hasArg().argName("id").longOpt("start").build());
     options.addOption(Option.builder("o").desc("Pass a cookie during add.").required(false).hasArg().argName("cookie").longOpt("cookie").build());
     options.addOption(Option.builder("e").desc("Get the endpoints.").required(false).longOpt("endpoints").build());
+
+    options.addOption(Option.builder("l").desc("List the plugin services.").required(false).longOpt("plugin-services").build());
+    options.addOption(Option.builder("f").desc("List the plugin files.").required(false).longOpt("plugin-files").build());
+    options.addOption(Option.builder("d").desc("List the files in download folder.").required(false).longOpt("download-files").build());
 
     mHeader = "";
     String footer = "(c) 2023 Michael sonst";
@@ -65,7 +69,7 @@ public class Application {
 
   public static void main(String[] args) throws MalformedURLException {
     String opt, cookie = null;
-    UUID downloadid = null;
+    Long downloadid = null;
     URL addUrl;
     RequestResult result = null;
 
@@ -79,18 +83,18 @@ public class Application {
         switch (option.getId()) {
           case 'a': {//ADD
             addUrl = new URL(option.getValue().trim().replace("\"", ""));
-            result = RestAssured.given().param("url", addUrl).param("cookie", cookie).get(new URL(strUrl + "/add")).as(RequestResult.class);
+            result = RestAssured.given().param("url", addUrl).param("cookie", cookie).get(new URL(strUrl + "/download/add")).as(RequestResult.class);
             break;
           }
           case 's': {//START
-            downloadid = (option.hasArgs()) ? UUID.fromString(option.getValue()) : downloadid;
-            result = RestAssured.given().param("cmd", DownloadCommand.START).param("downloadId", downloadid).get(new URL(strUrl + "/control"))
-                .as(RequestResult.class);
+            downloadid = (option.hasArgs()) ? Integer.valueOf(option.getValue()) : downloadid;
+            result = RestAssured.given().param("cmd", DownloadCommand.START).param("downloadId", downloadid)
+                .get(new URL(strUrl + "/download/control")).as(RequestResult.class);
             break;
           }
           case 'c': {//STATUS
-            downloadid = (option.hasArgs()) ? UUID.fromString(option.getValue()) : downloadid;
-            result = RestAssured.given().param("downloadId", downloadid).get(new URL(strUrl + "/status")).as(RequestResult.class);
+            downloadid = (option.hasArgs()) ? Integer.valueOf(option.getValue()) : downloadid;
+            result = RestAssured.given().param("downloadId", downloadid).get(new URL(strUrl + "/download/status")).as(RequestResult.class);
             break;
           }
           case 'h'://HOST
@@ -101,6 +105,19 @@ public class Application {
             break;
           case 'e': {//ENDPOINTS
             System.out.println("Result" + RestAssured.given().get(new URL(strUrl + "/introspect/endpoints")).asPrettyString());
+            break;
+          }
+
+          case 'l': {//SERVICES
+            System.out.println("Result" + RestAssured.given().get(new URL(strUrl + "/plugin/services")).asPrettyString());
+            break;
+          }
+          case 'f': {//PLUGIN FILES
+            System.out.println("Result" + RestAssured.given().get(new URL(strUrl + "/plugin/files")).asPrettyString());
+            break;
+          }
+          case 'd': {//DOWNLOAD FILES
+            System.out.println("Result" + RestAssured.given().get(new URL(strUrl + "/download/files")).asPrettyString());
             break;
           }
           default: {

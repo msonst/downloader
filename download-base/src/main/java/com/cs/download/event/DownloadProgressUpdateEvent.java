@@ -17,6 +17,8 @@ package com.cs.download.event;
 
 import java.io.Serializable;
 
+import com.cs.download.DownloadStatusCode;
+
 /**
  * The {@code DownloadProgressUpdateEvent} class represents an event indicating the progress update
  * during the download process.
@@ -26,13 +28,23 @@ import java.io.Serializable;
 public class DownloadProgressUpdateEvent extends DownloadEvent implements Serializable {
 
   private static final long serialVersionUID = 2353566631945415574L;
+  private DownloadStatusCode mStatus;
 
   /**
    * Constructs a new {@code DownloadProgressUpdateEvent} with the specified source.
    *
    * @param source The object on which the event initially occurred.
    */
-  public DownloadProgressUpdateEvent(Object source) {
+  public DownloadProgressUpdateEvent(Object source, DownloadStatusCode status) {
     super(source);
+    mStatus = status;
+  }
+
+  public DownloadStatusCode getStatus() {
+    return mStatus;
+  }
+
+  public void setStatus(DownloadStatusCode status) {
+    mStatus = status;
   }
 }

@@ -16,9 +16,9 @@
 package com.cs.download;
 
 import java.net.Proxy;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -28,10 +28,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cs.download.entity.DownloadEntity;
+import com.cs.download.event.DownloadProgressUpdateEvent;
 import com.cs.download.event.DownloadStatusListener;
+import com.cs.download.event.PartProgressUpdateEvent;
+import com.cs.download.service.DownloadEntityService;
 
 /**
  * The {@code DownloadManager} class manages multiple file download tasks
@@ -52,10 +58,11 @@ public class DownloadManager {
 
   private final Proxy mProxy;
   private final String mSavePath;
-  private final HashMap<URI, UUID> mDownloads = new HashMap<>();
-  private final HashMap<UUID, DownloadTask> mDownloadTasks = new HashMap<>();
-  private final HashMap<UUID, Future<DownloadStatusCode>> mExecuting = new HashMap<>();
+  private HashMap<Long, Download> mDownloads = new HashMap<>();
   private final ExecutorService mPool;
+
+  @Autowired
+  private DownloadEntityService mDownloadEntityService;
 
   /**
    * Constructs a new {@code DownloadManager} with the specified parameters.
@@ -63,7 +70,7 @@ public class DownloadManager {
    * @param proxy                The proxy to be used for downloads.
    * @param savePath             The path where downloaded files will be saved.
    * @param maxParallelDownloads The maximum number of parallel downloads allowed.
-   */
+  s   */
   public DownloadManager(final Proxy proxy, final String savePath, final int maxParallelDownloads) {
     mProxy = new Proxy(proxy.type(), proxy.address());
     mSavePath = savePath;
@@ -71,56 +78,71 @@ public class DownloadManager {
   }
 
   /**
-   * Adds a new download task to the manager.
-   *
-   * @param url                    The URL of the file to download.
-   * @param cookie                 The cookie to use for authentication.
-   * @param threadCount            The number of threads to use for downloading.
-   * @param downloadStatusListener The listener for download status updates.
-   * @return The {@link UUID} object representing the added download task.
-   * @throws URISyntaxException 
-   */
-  public UUID addDownload(final URL url, final String cookie, final int threadCount, final DownloadStatusListener downloadStatusListener)
-      throws URISyntaxException {
-    UUID ret = mDownloads.get(url.toURI());
-    if (null == ret) {
-      ret = UUID.randomUUID();
-      DownloadTask downloadTask = new DownloadTask(url, cookie, mProxy, mSavePath, threadCount, downloadStatusListener);
-      mDownloads.put(url.toURI(), ret);
-      mDownloadTasks.put(ret, downloadTask);
-      LOGGER.debug("Download added id={} url={}", ret, url);
-    } else
-      LOGGER.info("Download already existing {}", url);
-    return ret;
-  }
-
-  /**
    * Adds a new download task to the manager with default parameters.
    *
    * @param url    The URL of the file to download.
    * @param cookie The cookie to use for authentication.
-   * @return The {@link UUID} object representing the added download task.
+   * @return The {@link Long} id.
    * @throws URISyntaxException 
    */
-  public UUID addDownload(final URL url, String cookie) throws URISyntaxException {
-    return addDownload(url, cookie, 1, null);
+  public Long addDownload(final URL url, String cookie, final int threadCount) throws URISyntaxException {
+    Long ret = null;
+
+    List<DownloadEntity> downloads = mDownloadEntityService.findByUrl(url.getPath());
+
+    if (!downloads.isEmpty()) {
+      ret = downloads.get(0).getId();
+      LOGGER.info("Download already existing {}", ret);
+      return ret;
+    }
+
+    String fileName = FilenameUtils.getName(url.getPath());
+    if (fileName.isEmpty())
+      fileName = url.getPath().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+
+    String filePath = Paths.get(mSavePath, fileName).toString();
+
+    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, threadCount, filePath, DownloadStatusCode.INITIALIZED.getStatusCode());
+    ret = mDownloadEntityService.saveEntity(downloadEntity);
+
+    LOGGER.debug("Download added id={} url={}", ret, url);
+
+    return ret;
+
   }
 
   /**
    * Starts the specified download task.
    *
-   * @param downloadId The {@link UUID} object representing the download task to
+   * @param d The {@link UUID} object representing the download task to
    *                 start.
    * @return DownloadStatusCode
    */
-  public DownloadStatusCode start(UUID downloadId) {
-    LOGGER.debug("Start {}", downloadId);
+  public DownloadStatusCode start(Long d) {
+    LOGGER.debug("Start {}", d);
 
-    DownloadTask downloadTask = mDownloadTasks.get(downloadId);
+    DownloadEntity downloadEntity = mDownloadEntityService.getEntityById(d);
 
-    if (null != downloadTask)
-      mExecuting.put(downloadId, mPool.submit(downloadTask));
+    //    Download download = mDownloads.get(d);
 
+    if (null != downloadEntity) {
+      DownloadTask downloadTask = new DownloadTask(downloadEntity, mProxy, new DownloadStatusListener() {
+
+        @Override
+        public void onProgress(DownloadProgressUpdateEvent event) {
+          mDownloadEntityService.saveEntity(null);
+          //          LOGGER.debug("onProgress url={} event.status={}", url, event.getStatus());
+        }
+
+        @Override
+        public void onProgress(PartProgressUpdateEvent event) {
+          //          LOGGER.debug("onProgress url={} event.partid={}", url, event.getPartId());
+        }
+      });
+      Download download = new Download(downloadTask);
+      mDownloads.put(d, download);
+      download.setFuture(mPool.submit(download.getTask()));
+    }
     return DownloadStatusCode.INITIALIZED;
   }
 
@@ -129,8 +151,12 @@ public class DownloadManager {
    * @return DownloadStatusCode
    */
   public DownloadStatusCode startAll() {
-    LOGGER.debug("Starting all {}", mDownloads.size());
-    mDownloadTasks.keySet().forEach(d -> start(d));   
+    LOGGER.debug("Starting all");
+
+    mDownloadEntityService.getAllEntities().forEach(d -> {
+      start(d.getId());
+    });
+
     return DownloadStatusCode.INITIALIZED;
   }
 
@@ -138,7 +164,7 @@ public class DownloadManager {
    * Waits for all download tasks to complete.
    */
   public void waitForCompletion() {
-    for (List<UUID> running = getRunning(); !running.isEmpty(); running = getRunning()) {
+    for (List<Long> running = getRunning(); !running.isEmpty(); running = getRunning()) {
       LOGGER.debug("Downloads not finished {}", running);
       try {
         Thread.sleep(1000);
@@ -155,19 +181,19 @@ public class DownloadManager {
    * @return A list of {@link java.util.UUID} objects representing running
    *         download tasks.
    */
-  private List<UUID> getRunning() {
-    return mExecuting.entrySet().parallelStream().filter(e -> !e.getValue().isDone()).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()))
+  private List<Long> getRunning() {
+    return mDownloads.entrySet().parallelStream().filter(e -> !e.getValue().isDone()).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()))
         .keySet().stream().collect(Collectors.toList());
   }
 
   /**
    * Checks whether the specified download task is complete.
    *
-   * @param downloadId The {@link UUID} object representing the download task.
+   * @param downloadId The {@link Integer} object representing the download task.
    * @return {@code true} if the download is complete, {@code false} otherwise.
    */
-  public DownloadStatusCode getStatus(UUID downloadId) {
-    Future<DownloadStatusCode> future = mExecuting.get(downloadId);
+  public DownloadStatusCode getStatus(Long downloadId) {
+    Future<DownloadStatusCode> future = mDownloads.get(downloadId).getFuture();
     try {
       return (null != future) ? (future.isDone()) ? future.get() : DownloadStatusCode.DOWNLOADING : DownloadStatusCode.COMPLETE;
     } catch (InterruptedException | ExecutionException e) {

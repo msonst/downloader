@@ -15,15 +15,20 @@
  */
 package com.cs.download;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for downloading operations.
  */
 public class DownloadUtils {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DownloadUtils.class);
 
   /**
    * Extracts the first cookie from the WebDriver's cookies and formats it as a string.
@@ -43,5 +48,15 @@ public class DownloadUtils {
       sb.append(";$Domain=\"").append(sc.getDomain()).append('"');
 
     return sb.toString();
+  }
+  
+  public static URI silentUri(String uri) {
+    try {
+      return new URI(uri);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("Invalid URI {} {}", uri, e.getMessage());
+    }
+    
+    return null;
   }
 }

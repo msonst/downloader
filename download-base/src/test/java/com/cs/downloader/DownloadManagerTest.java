@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.UUID;
@@ -126,10 +127,10 @@ class DownloadManagerTest {
     DownloadManager uut = new DownloadManager(mProxy, SAVE_PATH, 1);
 
     // Create an array to store downloads
-    UUID[] downloads = new UUID[10];
+    Long[] downloads = new Long[10];
     for (int i = 0; i < 10; i++) {
       // Add a download task with a mock URL and cookie
-      downloads[i] = uut.addDownload(mockUrl(mProxy), COOKIE);
+      downloads[i] = uut.addDownload(mockUrl(mProxy), COOKIE, 1);
 
       // Start the download task
       uut.start(downloads[i]);

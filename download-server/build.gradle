@@ -29,14 +29,16 @@ dependencies {
 
 	implementation project(':download-plugin-api')
 	implementation project(':download-plugin-core')
-
-	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
-	testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"
+	    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.2.0'
 	
 	testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
 	testImplementation "org.junit.platform:junit-platform-launcher"
 	
 	testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
+    
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.2.0'
+	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
+	testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"	
 }
 
 bootJar {

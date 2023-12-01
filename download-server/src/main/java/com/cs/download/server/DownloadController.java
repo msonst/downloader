@@ -15,15 +15,23 @@
  */
 package com.cs.download.server;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cs.download.DownloadManager;
@@ -42,37 +50,29 @@ import com.cs.download.server.api.RequestResult;
  * response.
  */
 @RestController
+@RequestMapping("/download")
 public class DownloadController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+private File mOutPath;
 
   private DownloadManager mDownloadManager;
-  private final DownloaderConfiguration mConfig;
-  private static final DownloadStatusListener LISTENER = new DownloadStatusListener() {
+  private DownloaderConfiguration mConfig;
 
-    @Override
-    public void onProgress(DownloadProgressUpdateEvent event) {
-      LOGGER.debug(event.toString());
-    }
-
-    @Override
-    public void onProgress(PartProgressUpdateEvent event) {
-      LOGGER.debug(event.toString());
-
-    }
-  };
 
   /**
    * Constructor for DownloadController.
    *
    * @param config The configuration for the downloader.
    */
+  @ConstructorBinding
   public DownloadController(DownloaderConfiguration config) {
     mConfig = config;
+    mOutPath = new File(config.getOutPath());
 
     // Setting up a proxy for the download manager based on the configuration.
-    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(mConfig.proxyHost(), mConfig.proxyPort()));
-    mDownloadManager = new DownloadManager(proxy, mConfig.outpath(), mConfig.parallelDownloads());
+    Proxy proxy = new Proxy(Proxy.Type.valueOf(config.getProxyType()), new InetSocketAddress(config.getProxyHost(), config.getProxyPort()));
+    mDownloadManager = new DownloadManager(proxy, config.getOutPath() + "/", config.getParallelDownloads());
   }
 
   /**
@@ -85,14 +85,18 @@ public class DownloadController {
    */
   @SuppressWarnings("deprecation")
   @GetMapping("/add")
-  public RequestResult add(@RequestParam(value = "url", defaultValue = "") String url,
-      @RequestParam(value = "cookie", defaultValue = "") String cookie) {
+  public RequestResult add(@RequestParam(value = "url") String url,
+      @RequestParam(value = "cookie") String cookie) {
 
     RequestResult ret;
 
     try {
+      if(null==cookie) {
+        
+      }
+        
       // Initiating the download using the DownloadManager.
-      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie, 1, LISTENER), DownloadStatusCode.OK);
+      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie, mConfig.getThreadsPerDownload()), DownloadStatusCode.OK);
     } catch (Exception e) {
       // Handling exceptions and creating a DownloadResult with an error.
       ret = new RequestResult(null, DownloadStatusCode.ERROR.setMessage(e.getMessage()));
@@ -105,7 +109,7 @@ public class DownloadController {
   }
 
   @GetMapping(value = "/status")
-  public RequestResult status(@RequestParam(value = "downloadId", defaultValue = "") UUID downloadId) {
+  public RequestResult status(@RequestParam(value = "downloadId", defaultValue = "") Long downloadId) {
 
     LOGGER.debug("REST status called downloadId={}", downloadId);
 
@@ -117,7 +121,7 @@ public class DownloadController {
   }
 
   @GetMapping(value = "/control")
-  public RequestResult control(@RequestParam(value = "downloadId", defaultValue = "") UUID downloadId,
+  public RequestResult control(@RequestParam(value = "downloadId", defaultValue = "") Long downloadId,
       @RequestParam(value = "cmd", defaultValue = "") DownloadCommand command) {
 
     LOGGER.debug("REST status called downloadId={}, command={}", downloadId, command);
@@ -140,4 +144,9 @@ public class DownloadController {
     return ret;
   }
 
+  @GetMapping("/files")
+  @ResponseBody
+  public List<String> listFolder() {
+    return Arrays.stream(mOutPath.listFiles()).map(File::getName).collect(Collectors.toList());
+  }
 }

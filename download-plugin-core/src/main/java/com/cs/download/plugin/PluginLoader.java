@@ -31,7 +31,7 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cs.download.plugin.spi.ServiceFactoryProvider;
+import com.cs.download.api.plugin.spi.Plugin;
 
 /**
  * Utility class for loading and managing plugins using the Service Provider Interface (SPI).
@@ -74,9 +74,9 @@ public class PluginLoader {
    *
    * @return A list of ServiceFactoryProvider instances.
    */
-  public static List<ServiceFactoryProvider> providers() {
-    List<ServiceFactoryProvider> services = new ArrayList<>();
-    ServiceLoader<ServiceFactoryProvider> loader = ServiceLoader.load(ServiceFactoryProvider.class, createPluginClassLoader(new File("./plugins")));
+  public static List<Plugin> providers() {
+    List<Plugin> services = new ArrayList<>();
+    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, createPluginClassLoader(new File("./plugins")));
     loader.forEach(services::add);
     return services;
   }
@@ -86,7 +86,7 @@ public class PluginLoader {
    *
    * @return The default ServiceFactoryProvider.
    */
-  public static ServiceFactoryProvider provider() {
+  public static Plugin provider() {
     return provider(DEFAULT_PROVIDER);
   }
 
@@ -97,11 +97,11 @@ public class PluginLoader {
    * @return The ServiceFactoryProvider with the specified name.
    * @throws ProviderNotFoundException If the specified provider is not found.
    */
-  public static ServiceFactoryProvider provider(String providerName) {
-    ServiceLoader<ServiceFactoryProvider> loader = ServiceLoader.load(ServiceFactoryProvider.class, createPluginClassLoader(new File("./plugins")));
-    Iterator<ServiceFactoryProvider> it = loader.iterator();
+  public static Plugin provider(String providerName) {
+    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, createPluginClassLoader(new File("./plugins")));
+    Iterator<Plugin> it = loader.iterator();
     while (it.hasNext()) {
-      ServiceFactoryProvider provider = it.next();
+      Plugin provider = it.next();
       if (providerName.equals(provider.getClass().getName())) {
         return provider;
       }
@@ -115,11 +115,11 @@ public class PluginLoader {
    * @param file The JAR file containing the ServiceFactoryProvider implementations.
    * @return A list of ServiceFactoryProvider instances.
    */
-  public static List<ServiceFactoryProvider> provider(File file) {
-    List<ServiceFactoryProvider> services = new ArrayList<>();
+  public static List<Plugin> provider(File file) {
+    List<Plugin> services = new ArrayList<>();
     URL[] url = new URL[] { toUrl(file.toURI()) };
     URLClassLoader classLoader = new URLClassLoader(url, PluginLoader.class.getClassLoader());
-    ServiceLoader<ServiceFactoryProvider> loader = ServiceLoader.load(ServiceFactoryProvider.class, classLoader);
+    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, classLoader);
     loader.forEach(services::add);
     return services;
   }

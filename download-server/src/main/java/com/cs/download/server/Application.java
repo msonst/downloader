@@ -17,6 +17,8 @@ package com.cs.download.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * Main application class for starting the file downloader application.
@@ -25,7 +27,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * entry point for the Spring Boot application and includes the configuration, component scanning,
  * and auto-configuration for the application.
  */
-@SpringBootApplication
+
+@EntityScan(basePackages = "com.cs.download.entity")
+@EnableJpaRepositories(basePackages = "com.cs.download.repository")
+@SpringBootApplication(scanBasePackages = { "com.cs.download"})
 public class Application {
   /**
    * Main method to launch the Spring Boot application.
