@@ -1,12 +1,14 @@
 package com.cs.download.api.plugin.service.host;
 
-import java.net.URI;
-
 public class HandleRequest {
 
-  private URI mURI;
+  private String mURI;
 
-  public URI getUri() {
+  public HandleRequest(String uri) {
+    mURI = uri;
+  }
+
+  public String getUri() {
     return mURI;
   }
 

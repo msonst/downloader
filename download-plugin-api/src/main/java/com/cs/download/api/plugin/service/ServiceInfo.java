@@ -14,7 +14,7 @@
  * limitations under the License.
  */package com.cs.download.api.plugin.service;
 
-import com.cs.download.api.plugin.lifecyccle.PluginLifecycleState;
+import com.cs.download.api.plugin.service.host.LifecycleState;
 
 /**
  * Represents information about a service, including its name and state.
@@ -29,7 +29,9 @@ public class ServiceInfo {
   /**
    * The state of the service.
    */
-  private PluginLifecycleState mState;
+  private LifecycleState mState;
+
+  private Class<? extends PluginService> mPluginClass;
 
   /**
    * Constructs a new ServiceInfo instance with the specified state and name.
@@ -37,9 +39,10 @@ public class ServiceInfo {
    * @param state The state of the service.
    * @param name  The name of the service.
    */
-  public ServiceInfo(PluginLifecycleState state, String name) {
+  public ServiceInfo(LifecycleState state, String name, Class<? extends PluginService> pluginclass) {
     mState = state;
     mName = name;
+    mPluginClass = pluginclass;
   }
 
   /**
@@ -56,7 +59,11 @@ public class ServiceInfo {
    *
    * @return The state of the service.
    */
-  public PluginLifecycleState getState() {
+  public LifecycleState getState() {
     return mState;
+  }
+
+  public Class<? extends PluginService> getPluginClass() {
+    return mPluginClass;
   }
 }

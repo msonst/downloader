@@ -389,7 +389,7 @@ public class DownloadStatusCode {
    */
   @JsonIgnore
   public boolean isOK() {
-    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getStatusCode()) && ("" == mMessage || null == mMessage);
+    return ((mResponseCode >= 200 && mResponseCode < 300) || mResponseCode == COMPLETE.getResponseCode()) && ("" == mMessage || null == mMessage);
   }
 
   /**
@@ -397,10 +397,14 @@ public class DownloadStatusCode {
    *
    * @return The HTTP response code.
    */
-  public int getStatusCode() {
+  public int getResponseCode() {
     return mResponseCode;
   }
 
+  public void setResponseCode(int responseCode) {
+     mResponseCode = responseCode;
+  }
+  
   /**
    * Returns a string representation of the DownloadStatusCode.
    *
@@ -420,7 +424,7 @@ public class DownloadStatusCode {
   public String getMessage() {
     return (null == mMessage) ? "" : mMessage;
   }
-
+  @JsonIgnore
   public boolean isDone() {
     // TODO Auto-generated method stub
     return false;

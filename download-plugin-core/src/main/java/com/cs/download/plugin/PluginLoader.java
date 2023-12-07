@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 import com.cs.download.api.plugin.spi.Plugin;
 
@@ -76,7 +77,8 @@ public class PluginLoader {
    */
   public static List<Plugin> providers() {
     List<Plugin> services = new ArrayList<>();
-    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, createPluginClassLoader(new File("./plugins")));
+    List<Plugin> loader = SpringFactoriesLoader.loadFactories(Plugin.class, createPluginClassLoader(new File("./plugins")));
+//    ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, createPluginClassLoader(new File("./plugins")));
     loader.forEach(services::add);
     return services;
   }

@@ -17,7 +17,7 @@ package com.cs.download.plugin;
 
 import java.util.EventObject;
 
-import com.cs.download.api.plugin.spi.PluginInfo;
+import com.cs.download.api.plugin.PluginInfo;
 
 /**
  * Event class representing changes in the state of plugins.

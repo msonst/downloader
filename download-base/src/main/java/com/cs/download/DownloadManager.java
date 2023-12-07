@@ -15,7 +15,7 @@
  */
 package com.cs.download;
 
-import java.net.Proxy;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -32,6 +32,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.stereotype.Component;
 
 import com.cs.download.entity.DownloadEntity;
 import com.cs.download.event.DownloadProgressUpdateEvent;
@@ -52,17 +54,19 @@ import com.cs.download.service.DownloadEntityService;
  * @see DownloadTask
  * @see java.util.concurrent.ExecutorService
  */
+@Component
 public class DownloadManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DownloadManager.class);
-
-  private final Proxy mProxy;
   private final String mSavePath;
   private HashMap<Long, Download> mDownloads = new HashMap<>();
   private final ExecutorService mPool;
-
+  @Autowired
+  private ProxyManager mProxyManager;
+  
   @Autowired
   private DownloadEntityService mDownloadEntityService;
+  private DownloaderConfiguration mConfig;
 
   /**
    * Constructs a new {@code DownloadManager} with the specified parameters.
@@ -70,11 +74,12 @@ public class DownloadManager {
    * @param proxy                The proxy to be used for downloads.
    * @param savePath             The path where downloaded files will be saved.
    * @param maxParallelDownloads The maximum number of parallel downloads allowed.
-  s   */
-  public DownloadManager(final Proxy proxy, final String savePath, final int maxParallelDownloads) {
-    mProxy = new Proxy(proxy.type(), proxy.address());
-    mSavePath = savePath;
-    mPool = Executors.newFixedThreadPool(maxParallelDownloads);
+   */
+  @ConstructorBinding
+  public DownloadManager(DownloaderConfiguration config) {
+    mConfig = config;
+    mSavePath= mConfig.getOutPath();
+    mPool = Executors.newFixedThreadPool(mConfig.getParallelDownloads());
   }
 
   /**
@@ -85,7 +90,7 @@ public class DownloadManager {
    * @return The {@link Long} id.
    * @throws URISyntaxException 
    */
-  public Long addDownload(final URL url, String cookie, final int threadCount) throws URISyntaxException {
+  public Long addDownload(final URL url, String cookie) throws URISyntaxException {
     Long ret = null;
 
     List<DownloadEntity> downloads = mDownloadEntityService.findByUrl(url.getPath());
@@ -102,7 +107,7 @@ public class DownloadManager {
 
     String filePath = Paths.get(mSavePath, fileName).toString();
 
-    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, threadCount, filePath, DownloadStatusCode.INITIALIZED.getStatusCode());
+    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, mConfig.getThreadsPerDownload(), filePath, DownloadStatusCode.INITIALIZED.getResponseCode());
     ret = mDownloadEntityService.saveEntity(downloadEntity);
 
     LOGGER.debug("Download added id={} url={}", ret, url);
@@ -126,7 +131,7 @@ public class DownloadManager {
     //    Download download = mDownloads.get(d);
 
     if (null != downloadEntity) {
-      DownloadTask downloadTask = new DownloadTask(downloadEntity, mProxy, new DownloadStatusListener() {
+      DownloadTask downloadTask = new DownloadTask(downloadEntity, mProxyManager.getProxy(), new DownloadStatusListener() {
 
         @Override
         public void onProgress(DownloadProgressUpdateEvent event) {
@@ -200,5 +205,9 @@ public class DownloadManager {
       e.printStackTrace();
       return DownloadStatusCode.ERROR.setMessage(e.getMessage());
     }
+  }
+
+  public File[] listFiles() {
+    return new File(mSavePath).listFiles();
   }
 }

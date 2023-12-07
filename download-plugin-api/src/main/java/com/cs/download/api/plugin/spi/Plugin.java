@@ -15,6 +15,11 @@
  */
 package com.cs.download.api.plugin.spi;
 
+import java.util.List;
+
+import com.cs.download.api.plugin.PluginInfo;
+import com.cs.download.api.plugin.service.ServiceInfo;
+
 /**
  * Interface for a provider that supplies information about a service factory.
  */
@@ -26,4 +31,11 @@ public interface Plugin {
    * @return Information about the service factory.
    */
   PluginInfo getPluginInfo();
+
+  /**
+   * Retrieves a list of service information, describing the available services that can be created by this factory.
+   *
+   * @return A list of service information.
+   */
+  List<ServiceInfo> getServiceInfo();
 }

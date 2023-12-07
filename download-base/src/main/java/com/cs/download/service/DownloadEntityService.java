@@ -12,25 +12,25 @@ import com.cs.download.repository.DownloadRepository;
 public class DownloadEntityService {
 
   @Autowired
-  private DownloadRepository DownloadRepository;
+  private DownloadRepository mDownloadRepository;
 
   public List<DownloadEntity> getAllEntities() {
-    return DownloadRepository.findAll();
+    return mDownloadRepository.findAll();
   }
 
   public DownloadEntity getEntityById(Long id) {
-    return DownloadRepository.findById(id).orElse(null);
+    return mDownloadRepository.findById(id).orElse(null);
   }
 
   public Long saveEntity(DownloadEntity entity) {
-    return DownloadRepository.save(entity).getId();
+    return mDownloadRepository.save(entity).getId();
   }
 
   public void deleteEntity(Long id) {
-    DownloadRepository.deleteById(id);
+    mDownloadRepository.deleteById(id);
   }
 
   public List<DownloadEntity> findByUrl(String url) {
-    return DownloadRepository.findByUrl(url);
+    return mDownloadRepository.findByUrl(url);
   }
 }

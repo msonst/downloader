@@ -15,6 +15,9 @@
  */
 package com.cs.download;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -49,14 +52,22 @@ public class DownloadUtils {
 
     return sb.toString();
   }
-  
+
   public static URI silentUri(String uri) {
     try {
       return new URI(uri);
     } catch (URISyntaxException e) {
       LOGGER.warn("Invalid URI {} {}", uri, e.getMessage());
     }
-    
+
     return null;
+  }
+
+  public static int getFreePort() throws Exception {
+    try (ServerSocket s = new ServerSocket()) {
+      s.setReuseAddress(true);
+      s.bind(new InetSocketAddress((InetAddress) null, 0));
+      return s.getLocalPort();
+    }
   }
 }

@@ -21,6 +21,9 @@ description = 'Resuming file download-base library for Java.'
 
 
 dependencies {
+		implementation project(":download-plugin-api")
+	api project(':download-plugin-core')
+
 	//implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
     implementation 'commons-io:commons-io:2.15.0'

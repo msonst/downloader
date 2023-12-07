@@ -8,4 +8,8 @@ public class LoginResult {
     mCookie = cookie;
   }
 
+  public String getCookie() {
+    return mCookie;
+  }
+
 }

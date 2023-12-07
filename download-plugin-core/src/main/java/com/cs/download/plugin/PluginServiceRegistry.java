@@ -15,33 +15,39 @@
  */
 package com.cs.download.plugin;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
-import com.cs.download.api.plugin.lifecyccle.PluginLifecycle;
-import com.cs.download.api.plugin.lifecyccle.PluginLifecycleResult;
-import com.cs.download.api.plugin.service.ServiceFactory;
+import com.cs.download.api.plugin.PluginInfo;
+import com.cs.download.api.plugin.service.PluginService;
 import com.cs.download.api.plugin.service.ServiceInfo;
-import com.cs.download.api.plugin.spi.PluginInfo;
+import com.cs.download.api.plugin.service.host.LifecycleResult;
 
 /**
  * A registry for managing and starting services provided by plugins.
  */
 @Service
-public class PluginServiceRegistry {
+public class PluginServiceRegistry implements ApplicationContextAware{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PluginServiceRegistry.class);
 
@@ -49,15 +55,19 @@ public class PluginServiceRegistry {
   private final Map<String, Wrapper> mServices = new HashMap<>();
 
   private PluginDiscovery mPluginDiscovery;
+  private @Autowired AutowireCapableBeanFactory mBeanFactory;
 
+  
+  private static ApplicationContext applicationContext;
+
+  
   /**
    * Inner class representing a wrapper for a service provided by a plugin.
    */
   private class Wrapper {
 
-    private ServiceFactory mServiceFactory;
     private ServiceInfo mServiceInfo;
-    private List<Future<PluginLifecycleResult>> mServiceInstances = new ArrayList<Future<PluginLifecycleResult>>();
+    private List<Future<LifecycleResult>> mServiceInstances = new ArrayList<Future<LifecycleResult>>();
 
     /**
      * Constructs a Wrapper for a service.
@@ -65,18 +75,8 @@ public class PluginServiceRegistry {
      * @param serviceFactory The factory for creating the service.
      * @param serviceInfo The information about the service.
      */
-    public Wrapper(ServiceFactory serviceFactory, ServiceInfo serviceInfo) {
-      mServiceFactory = serviceFactory;
+    public Wrapper(ServiceInfo serviceInfo) {
       mServiceInfo = serviceInfo;
-    }
-
-    /**
-     * Gets the service factory.
-     *
-     * @return The service factory.
-     */
-    public ServiceFactory getServiceFactory() {
-      return mServiceFactory;
     }
 
     /**
@@ -93,7 +93,7 @@ public class PluginServiceRegistry {
      *
      * @param futureServiceResult The Future representing the service instance.
      */
-    public void addServiceInstance(Future<PluginLifecycleResult> futureServiceResult) {
+    public void addServiceInstance(Future<LifecycleResult> futureServiceResult) {
       mServiceInstances.add(futureServiceResult);
     }
   }
@@ -120,11 +120,14 @@ public class PluginServiceRegistry {
       public void onCreated(PluginEvent event) {
         LOGGER.debug("NEW plugin");
         for (PluginInfo pluginInfo : event.getPluginInfo()) {
-          for (ServiceFactory serviceFactory : pluginInfo.getFactories()) {
-            for (ServiceInfo serviceInfo : serviceFactory.getServiceInfo()) {
+          if (null != pluginInfo) {
+            for (ServiceInfo serviceInfo : pluginInfo.getServices()) {
               String name = serviceInfo.getName();
-              LOGGER.debug("NEW service " + name);
-              mServices.put(name, new Wrapper(serviceFactory, serviceInfo));
+
+              if (!mServices.containsKey(name)) {
+                LOGGER.debug("NEW service " + name);
+                mServices.put(name, new Wrapper(serviceInfo));
+              }
             }
           }
         }
@@ -142,24 +145,66 @@ public class PluginServiceRegistry {
    * @return The set of service names.
    */
   public Set<String> getServices() {
-    return new HashSet<>(mServices.keySet());
+
+    return mServices.values().stream().map(w -> w.getServiceInfo()).map(s -> s.getName()).collect(Collectors.toSet());
+  }
+
+  public Set<String> getServices(Class<? extends PluginService> clazz) {
+
+    return mServices.values().stream().map(w -> w.getServiceInfo()).filter(s -> (clazz.isAssignableFrom(s.getPluginClass()))).map(s -> s.getName())
+        .collect(Collectors.toSet());
+  }
+
+  private <T extends PluginService> T createInstance(Class<? extends PluginService> clazz) throws IllegalAccessException, InstantiationException {
+    Class<T> type = null;
+
+    // Get the actual type parameter used for this instance
+    Type genericSuperclass = clazz.getGenericSuperclass();
+    if (genericSuperclass instanceof ParameterizedType) {
+      Type[] typeArguments = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+      if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+        type = (Class<T>) typeArguments[0];
+      }
+    }
+    return (null != type) ? type.newInstance() : null;
+  }
+
+  public <T extends PluginService> T getService(Class<? extends PluginService> clazz) {
+    T ret = null;
+    try {
+      ret = (T) clazz.getDeclaredConstructor().newInstance();
+    } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+        | SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return ret;
   }
 
   /**
-   * Starts a service with the specified name.
+   * gets a service with the specified name.
    *
    * @param name The name of the service to start.
-   * @throws InterruptedException If the thread is interrupted while waiting.
-   * @throws ExecutionException If the computation threw an exception.
    */
-  public void startService(String name) throws InterruptedException, ExecutionException {
+  public <T extends PluginService> T getService(String name) {
     Wrapper wrapper = mServices.get(name);
 
-    PluginLifecycle service = wrapper.getServiceFactory().getService(wrapper.getServiceInfo());
+    try {
+      ServiceInfo serviceInfo = wrapper.getServiceInfo();
+      T ret = getService(serviceInfo.getPluginClass());
+      mBeanFactory.autowireBean(ret);
+      wrapper.addServiceInstance(mThreadPool.submit(() -> ret.start()));
+      return ret;
+    } catch (ClassCastException e) {
+      return null;
+    }
+  }
 
-    wrapper.addServiceInstance(mThreadPool.submit(() -> service.start()));
-
-    LOGGER.debug("started");
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext=applicationContext;
+    
   }
 
 }

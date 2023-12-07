@@ -20,6 +20,7 @@ plugins {
 description='(Demo) File download-client.'
 
 dependencies {	
+	implementation project(':download-utils')
 	implementation project(':download-base')
 	implementation project(':download-server-api')
 	

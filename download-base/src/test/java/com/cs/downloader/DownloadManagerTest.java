@@ -124,13 +124,13 @@ class DownloadManagerTest {
   void test() throws URISyntaxException {
     // Initialize DownloadManager with a proxy, save path, and maximum parallel
     // downloads
-    DownloadManager uut = new DownloadManager(mProxy, SAVE_PATH, 1);
+    DownloadManager uut = new DownloadManager(null);
 
     // Create an array to store downloads
     Long[] downloads = new Long[10];
     for (int i = 0; i < 10; i++) {
       // Add a download task with a mock URL and cookie
-      downloads[i] = uut.addDownload(mockUrl(mProxy), COOKIE, 1);
+      downloads[i] = uut.addDownload(mockUrl(mProxy), COOKIE);
 
       // Start the download task
       uut.start(downloads[i]);

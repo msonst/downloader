@@ -25,7 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.stereotype.Service;
 
-import com.cs.download.api.plugin.spi.PluginInfo;
+import com.cs.download.api.plugin.PluginConfig;
+import com.cs.download.api.plugin.PluginInfo;
 import com.cs.file.monitor.FileAdapter;
 import com.cs.file.monitor.FileEvent;
 import com.cs.file.monitor.FileSystemMonitor;

@@ -40,7 +40,7 @@ tasks.withType(Jar){
 }
 
 java {
-    withJavadocJar()
+    //withJavadocJar()
     withSourcesJar()
     toolchain {
         languageVersion = JavaLanguageVersion.of(20)

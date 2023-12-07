@@ -16,18 +16,16 @@
 package com.cs.download.server;
 
 import java.io.File;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,9 +34,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cs.download.DownloadManager;
 import com.cs.download.DownloadStatusCode;
-import com.cs.download.event.DownloadProgressUpdateEvent;
-import com.cs.download.event.DownloadStatusListener;
-import com.cs.download.event.PartProgressUpdateEvent;
+import com.cs.download.api.plugin.service.host.HandleRequest;
+import com.cs.download.api.plugin.service.host.HostService;
+import com.cs.download.api.plugin.service.host.LoginRequest;
+import com.cs.download.api.plugin.service.host.LoginResult;
+import com.cs.download.plugin.PluginServiceRegistry;
 import com.cs.download.server.api.DownloadCommand;
 import com.cs.download.server.api.RequestResult;
 
@@ -54,25 +54,19 @@ import com.cs.download.server.api.RequestResult;
 public class DownloadController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-private File mOutPath;
-
+  @Autowired
   private DownloadManager mDownloadManager;
-  private DownloaderConfiguration mConfig;
-
+  @Autowired
+  private PluginServiceRegistry mServiceRegistry;
 
   /**
    * Constructor for DownloadController.
    *
    * @param config The configuration for the downloader.
    */
-  @ConstructorBinding
-  public DownloadController(DownloaderConfiguration config) {
-    mConfig = config;
-    mOutPath = new File(config.getOutPath());
-
+  public DownloadController() {
     // Setting up a proxy for the download manager based on the configuration.
-    Proxy proxy = new Proxy(Proxy.Type.valueOf(config.getProxyType()), new InetSocketAddress(config.getProxyHost(), config.getProxyPort()));
-    mDownloadManager = new DownloadManager(proxy, config.getOutPath() + "/", config.getParallelDownloads());
+    //    Proxy proxy = new Proxy(Proxy.Type.valueOf(config.getProxyType()), new InetSocketAddress(config.getProxyHost(), config.getProxyPort()));
   }
 
   /**
@@ -85,19 +79,35 @@ private File mOutPath;
    */
   @SuppressWarnings("deprecation")
   @GetMapping("/add")
-  public RequestResult add(@RequestParam(value = "url") String url,
-      @RequestParam(value = "cookie") String cookie) {
+  public RequestResult add(@RequestParam(value = "url") String url, @RequestParam(value = "cookie") String cookie) {
 
     RequestResult ret;
 
     try {
-      if(null==cookie) {
-        
+      //      if (null == cookie || cookie.isEmpty()) {
+      Set<String> services = mServiceRegistry.getServices(HostService.class);
+      LOGGER.debug("Available HostServices services={}", services);
+      services.remove("Default");
+
+      HandleRequest handleRequest = new HandleRequest(url);
+      LoginRequest loginRequest = new LoginRequest(url, "", "");
+
+      for (Iterator iterator = services.iterator(); iterator.hasNext();) {
+        String service = (String) iterator.next();
+        HostService hostService = mServiceRegistry.getService(service);
+        if (null != hostService && hostService.canHandle(handleRequest)) {
+          LoginResult loginResult = hostService.login(loginRequest);
+          cookie = loginResult.getCookie();
+          break;
+        }
       }
-        
+      //      }
+
       // Initiating the download using the DownloadManager.
-      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie, mConfig.getThreadsPerDownload()), DownloadStatusCode.OK);
-    } catch (Exception e) {
+      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie), DownloadStatusCode.OK);
+    } catch (
+
+    Exception e) {
       // Handling exceptions and creating a DownloadResult with an error.
       ret = new RequestResult(null, DownloadStatusCode.ERROR.setMessage(e.getMessage()));
     }
@@ -147,6 +157,6 @@ private File mOutPath;
   @GetMapping("/files")
   @ResponseBody
   public List<String> listFolder() {
-    return Arrays.stream(mOutPath.listFiles()).map(File::getName).collect(Collectors.toList());
+    return Arrays.stream(mDownloadManager.listFiles()).map(File::getName).collect(Collectors.toList());
   }
 }
