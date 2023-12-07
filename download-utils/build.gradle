@@ -18,7 +18,7 @@ plugins {
 }
 
 description = 'Utilities for downloading.'
-
+mainClass='com.cs.download.Application'
 dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
 }

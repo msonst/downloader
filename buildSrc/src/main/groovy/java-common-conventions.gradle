@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 plugins {
-        id 'java'
+    id 'java-library'
         id 'eclipse'
 }
 
 repositories {
+    maven {
+        url = uri('https://repo.spring.io/release')
+    }
+
     mavenCentral()
 }
 
@@ -33,6 +37,13 @@ sourceSets {
             srcDirs 'src/test/java'
         }
     }
+}
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
 }
 
 tasks.withType(Jar){

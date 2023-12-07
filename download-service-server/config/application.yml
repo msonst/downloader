@@ -1,0 +1,68 @@
+server:
+  port: 9090
+
+logging:
+  level:
+    org.springframework: INFO
+    com.cs: DEBUG
+
+download:
+  outpath: "./data"
+  persistfile: "./dl.json"
+  paralleldownloads: 10
+  downloadthreads: 1
+
+proxy:
+  provider: "Tor"   
+  tor:
+    host: 192.168.0.100
+    password: "pw"
+    port: 9050
+    ctlport: 9051
+  ssh:
+    user: "pw"
+    password: "pw"
+    host: 192.168.0.100
+    port: 22
+  docker:
+    path: "%userprofile%/.docker"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+  metrics:
+    distribution:
+      percentiles-histogram.http.server.requests: true
+      percentiles-histogram.resilience4j.circuitbreaker.calls: true
+      
+spring:
+  application:
+    name: dl
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://postgres:5432/dbdownload
+    driverClassName: org.postgresql.Driver
+    username: dbuser
+    password: dbpass
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  
+springdoc:
+  api-docs:
+    path: "/api-docs"
+
+plugin:
+  monitoringPath: "./plugin"

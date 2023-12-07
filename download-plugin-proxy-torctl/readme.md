@@ -1,1 +1,0 @@
-https://github.com/torproject/torspec/blob/main/control-spec.txt

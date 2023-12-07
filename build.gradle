@@ -7,7 +7,7 @@ plugins {
 subprojects {
 	
 	apply plugin: 'java-common-conventions'
-	
+
 	repositories {
 	    mavenCentral()    
 	    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
@@ -28,7 +28,12 @@ subprojects {
         testImplementation "org.mockito:mockito-core:5.7.0"
     }
     
-	jar {
+    dependencyManagement {
+        applyMavenExclusions = false
+    } 
+
+	jar {    
+
 	    manifest {
 	        attributes(
 	                "Class-Path": "com.cs.download",
