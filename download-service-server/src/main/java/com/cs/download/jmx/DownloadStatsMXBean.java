@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
-}
+package com.cs.download.jmx;
 
-description = 'Resuming file download-server with REST interface.'
+public interface DownloadStatsMXBean {
+  public int getThreadId();
 
-dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
+  public long getStartRange();
 
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
+  public long getEndRange();
 
-jar{
-    archiveClassifier=''
-    //enabled = false
+  public long getBytes();
+
+  public long getTransferred();
+
+  public long getFileSzAtStart();
+
+  public long getStart();
+
+  public long getEnd();
+
+  public double getCycleTime();
+
+  public double getMbit();
 }

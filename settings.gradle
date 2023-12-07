@@ -1,4 +1,4 @@
 
 rootProject.name = 'downloader'
 
-include(':download-service-server',   ':download-service-tor')
+include(':download-client', ':download-service-registy', ':download-service-server',   ':download-service-tor')

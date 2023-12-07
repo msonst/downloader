@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   db:
-    image: spring-microservices/postgres
+    image: om.local:5000/postgres
     container_name: postgres
     ports:
       - "5432:5432"

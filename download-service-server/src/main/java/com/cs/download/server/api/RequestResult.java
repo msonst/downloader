@@ -13,24 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
-}
+package com.cs.download.server.api;
 
-description = 'Resuming file download-server with REST interface.'
-
-dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
-
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
-
-jar{
-    archiveClassifier=''
-    //enabled = false
+public record RequestResult(Long downloadId, DownloadStatusCode status) {
 }

@@ -20,17 +20,30 @@ subprojects {
     apply from: file("${rootDir}/buildSrc/publishing.gradle")
 
     dependencies {
-        implementation "org.slf4j:slf4j-api:2.0.9"
+        implementation "org.slf4j:slf4j-api:2.0.9"	    
+        api 'org.postgresql:postgresql:42.6.0'
+
        	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
- 
+	    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springbootversion}"
+		implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${springbootversion}"
+
+
+		
+		testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
+	    
+		
+		testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"	
+		
+		testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
+		testImplementation "org.junit.platform:junit-platform-launcher"
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
         testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
         testImplementation "org.mockito:mockito-core:5.7.0"
     }
     
-    dependencyManagement {
-        applyMavenExclusions = false
-    } 
+//    dependencyManagement {
+//        applyMavenExclusions = false
+//    } 
 
 	jar {    
 

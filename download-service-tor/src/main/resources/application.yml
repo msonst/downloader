@@ -1,5 +1,5 @@
 server:
-  port: 9091
+  port: 9090
 
 logging:
   level:
@@ -37,49 +37,26 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://localhost:9411/api/v2/spans
+      endpoint: http://zipkin:9411/api/v2/spans
   metrics:
     distribution:
       percentiles-histogram.http.server.requests: true
       percentiles-histogram.resilience4j.circuitbreaker.calls: true
-
-resilience4j.retry:
-    configs:
-        default:
-            maxAttempts: 3
-            waitDuration: 100
-            retryExceptions:
-                - org.springframework.web.client.HttpServerErrorException
-                - java.util.concurrent.TimeoutException
-                - java.io.IOException
-    instances:
-        poller:
-            baseConfig: default
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone:  http://localhost:9090/eureka
-    instance:
-      hostname:  localhost
-    registerWithEureka: true
-    fetchRegistry: true
-
+      
 spring:
   application:
     name: dl
   profiles:
     active: dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/dbdownload
+    url: jdbc:postgresql://postgres:5432/dbdownload
     driverClassName: org.postgresql.Driver
     username: dbuser
     password: dbpass
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-      generate-ddl: true
     show-sql: true
 
   

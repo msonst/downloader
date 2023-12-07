@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
-}
+package com.cs.download.event;
 
-description = 'Resuming file download-server with REST interface.'
+/**
+ * An abstract adapter class for the {@link DownloadStatusListener} interface.
+ * This class provides empty implementations of all methods for easy extension.
+ */
+public abstract class DownloadAdapter implements DownloadStatusListener {
 
-dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
+  // Empty implementations for all methods in DownloadStatusListener
 
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onProgress(PartProgressUpdateEvent event) {
 
-jar{
-    archiveClassifier=''
-    //enabled = false
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void onProgress(DownloadProgressUpdateEvent event) {
+
+  }
 }

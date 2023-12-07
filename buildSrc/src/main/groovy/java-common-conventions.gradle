@@ -19,9 +19,9 @@ plugins {
 }
 
 repositories {
-    maven {
+    /*maven {
         url = uri('https://repo.spring.io/release')
-    }
+    }*/
 
     mavenCentral()
 }

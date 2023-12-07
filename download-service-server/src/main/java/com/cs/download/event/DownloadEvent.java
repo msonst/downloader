@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
-}
+package com.cs.download.event;
 
-description = 'Resuming file download-server with REST interface.'
+import java.util.EventObject;
 
-dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
+/**
+ * Base class for events related to the download process.
+ */
+public class DownloadEvent extends EventObject {
 
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
+  private static final long serialVersionUID = -1558990924122036970L;
 
-jar{
-    archiveClassifier=''
-    //enabled = false
+  /**
+   * Constructs a new DownloadEvent with the specified source object.
+   *
+   * @param source The source object that generated the event.
+   */
+  public DownloadEvent(Object source) {
+    super(source);
+  }
 }

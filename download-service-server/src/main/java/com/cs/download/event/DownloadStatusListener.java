@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
-}
+package com.cs.download.event;
 
-description = 'Resuming file download-server with REST interface.'
+/**
+ * An interface for receiving notifications about the progress of a download.
+ */
+public interface DownloadStatusListener extends java.util.EventListener {
 
-dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
+  /**
+   * Called when a part of the download progresses.
+   *
+   * @param event The event containing information about the part progress.
+   */
+  public void onProgress(PartProgressUpdateEvent event);
 
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
-
-jar{
-    archiveClassifier=''
-    //enabled = false
+  /**
+   * Called when a the download progresses.
+   *
+   * @param event The event containing information about the part progress.
+   */
+  public void onProgress(DownloadProgressUpdateEvent event);
 }

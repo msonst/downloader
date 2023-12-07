@@ -13,50 +13,50 @@ services:
       POSTGRES_USER: dbuser
       POSTGRES_PASSWORD: dbpass
       
-  download-service-server:
-    image: om.local:5000/download-service-server
-    container_name: download-service-server
-    ports:
-      - "18081:8080"
-    links:
-      - postgres
-      - zipkin
-    build:
-      context: ./download-service-server
-      dockerfile: Dockerfile
-      
-  download-service-tor:
-    image: om.local:5000/download-service-tor
-    container_name: download-service-tor
-    ports:
-      - "18083:8080"
-    links:
-      - postgres
-      - download-service-server
-      - zipkin
-    build:
-      context: ./download-service-tor
-      dockerfile: Dockerfile
+#  download-service-server:
+#    image: om.local:5000/download-service-server
+#    container_name: download-service-server
+#    ports:
+#      - "18081:8080"
+#    links:
+#      - postgres
+#      - zipkin
+#    build:
+#      context: ./download-service-server
+#      dockerfile: Dockerfile
+#      
+#  download-service-tor:
+#    image: om.local:5000/download-service-tor
+#    container_name: download-service-tor
+#    ports:
+#      - "18083:8080"
+#    links:
+#      - postgres
+#      - download-service-server
+#      - zipkin
+#    build:
+#      context: ./download-service-tor
+#      dockerfile: Dockerfile
 
-  prometheus:
-    image: om.local:5000/prometheus
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    links:
-      - download-service-server
-      - download-service-tor
-    build:
-      context: ./prometheus
-      dockerfile: Dockerfile
-      
-  grafana:
-    image: 'grafana/grafana:10.2.0'
-    links:
-      - prometheus
-    ports:
-      - '3000:3000'
-  zipkin:
-    image: openzipkin/zipkin:2.24
-    ports:
-      - 9412:9411
+#  prometheus:
+#    image: om.local:5000/prometheus
+#    container_name: prometheus
+#    ports:
+#      - "9090:9090"
+##    links:
+##      - download-service-server
+##      - download-service-tor
+#    build:
+#      context: ./prometheus
+#      dockerfile: Dockerfile
+#      
+#  grafana:
+#    image: 'grafana/grafana:10.2.0'
+#    links:
+#      - prometheus
+#    ports:
+#      - '3000:3000'
+#  zipkin:
+#    image: openzipkin/zipkin:2.24
+#    ports:
+#      - 9412:9411

@@ -22,7 +22,8 @@ plugins {
 description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
-	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
+	    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:${springcloudversion}"
+
 }
 
 bootJar {
