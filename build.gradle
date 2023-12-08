@@ -1,46 +1,48 @@
 plugins {
-	id 'java-common-conventions'
+    id 'java'
 }
+/*
+apply from: file("${rootDir}/buildSrc/versions.gradle")
 
-
+dependencies {
+    constraints {
+	    api 'org.postgresql:postgresql:42.6.0'
+	
+		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
+		api "org.springframework.cloud:spring-cloud-starter-openfeign:${springcloudversion}"
+	   	api "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
+	    api "org.springframework.boot:spring-boot-starter-data-jpa:${springbootversion}"
+		api "org.springframework.boot:spring-boot-starter-thymeleaf:${springbootversion}"
+		
+		testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
+		testImplementation "org.junit.api:junit-api-launcher"
+	    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+	    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+	    testImplementation "org.mockito:mockito-core:5.7.0"
+		testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"	
+		testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
+		 
+	} 
+}
+*/ 
 
 subprojects {
 	
-	apply plugin: 'java-common-conventions'
-
 	repositories {
-	    mavenCentral()    
+     mavenCentral()    
 	    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+	    
+ 
 	}
 	
 	group = "com.corporate-startup"
 	version = '2.0.0'
 
-    apply from: file("${rootDir}/buildSrc/versions.gradle")
-    apply from: file("${rootDir}/buildSrc/publishing.gradle")
+	apply from: file("${rootDir}/buildSrc/versions.gradle")
+	   	apply from: file("${rootDir}/buildSrc/versions.gradle")
+	   
 
-    dependencies {
-        implementation "org.slf4j:slf4j-api:2.0.9"	    
-        api 'org.postgresql:postgresql:42.6.0'
-
-       	implementation "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
-	    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springbootversion}"
-		implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${springbootversion}"
-
-
-		
-		testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
-	    
-		
-		testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"	
-		
-		testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
-		testImplementation "org.junit.platform:junit-platform-launcher"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
-        testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
-        testImplementation "org.mockito:mockito-core:5.7.0"
-    }
-    
+ 
 //    dependencyManagement {
 //        applyMavenExclusions = false
 //    } 

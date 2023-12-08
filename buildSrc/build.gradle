@@ -28,6 +28,8 @@ dependencies {
     implementation gradleApi()
       
     implementation "org.springframework.boot:spring-boot-gradle-plugin:${springbootgradleversion}"
+    implementation "io.spring.gradle:dependency-management-plugin:${springdependencymanagementpluginversion}"
+    
    /* implementation "com.github.ben-manes:gradle-versions-plugin:0.46.0"
     implementation "com.palantir.gradle.docker:gradle-docker:0.35.0"
     

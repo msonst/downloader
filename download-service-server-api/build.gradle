@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 plugins {
-	id 'application' 
 	id 'java-lib-conventions'
+	//id 'io.spring.dependency-management'
+	
 }
 
-description='(Demo) File download-client.'
+description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
-    implementation project(":download-service-server-api")
-
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.21.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.21.1'
 	
-	implementation "io.rest-assured:rest-assured:${restassuredversion}"
-	implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
-}
-
-application {
-	mainClassName   = 'com.cs.download.client.Application' 
 }

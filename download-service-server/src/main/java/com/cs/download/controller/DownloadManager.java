@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
 
 import com.cs.download.entity.DownloadEntity;
@@ -40,6 +41,7 @@ import com.cs.download.event.DownloadProgressUpdateEvent;
 import com.cs.download.event.DownloadStatusListener;
 import com.cs.download.event.PartProgressUpdateEvent;
 import com.cs.download.server.api.DownloadStatusCode;
+import com.cs.download.server.api.host.HostService;
 import com.cs.download.service.DownloadEntityService;
 
 /**
@@ -62,11 +64,10 @@ public class DownloadManager {
   private final String mSavePath;
   private HashMap<Long, Download> mDownloads = new HashMap<>();
   private final ExecutorService mPool;
-  @Autowired
-  private ProxyManager mProxyManager;
-  
-  @Autowired
-  private DownloadEntityService mDownloadEntityService;
+
+  private @Autowired ProxyManager mProxyManager;
+  private @Autowired DiscoveryClient mDiscoveryClient;
+  private @Autowired DownloadEntityService mDownloadEntityService;
   private DownloaderConfiguration mConfig;
 
   /**
@@ -79,7 +80,7 @@ public class DownloadManager {
   @ConstructorBinding
   public DownloadManager(DownloaderConfiguration config) {
     mConfig = config;
-    mSavePath= mConfig.getOutPath();
+    mSavePath = mConfig.getOutPath();
     mPool = Executors.newFixedThreadPool(mConfig.getParallelDownloads());
   }
 
@@ -108,7 +109,8 @@ public class DownloadManager {
 
     String filePath = Paths.get(mSavePath, fileName).toString();
 
-    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, mConfig.getThreadsPerDownload(), filePath, DownloadStatusCode.INITIALIZED.getResponseCode());
+    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, mConfig.getThreadsPerDownload(), filePath,
+        DownloadStatusCode.INITIALIZED.getResponseCode());
     ret = mDownloadEntityService.saveEntity(downloadEntity);
 
     LOGGER.debug("Download added id={} url={}", ret, url);
@@ -132,7 +134,7 @@ public class DownloadManager {
     //    Download download = mDownloads.get(d);
 
     if (null != downloadEntity) {
-      DownloadTask downloadTask = new DownloadTask(downloadEntity, mProxyManager.getProxy(), new DownloadStatusListener() {
+      DownloadTask downloadTask = new DownloadTask(downloadEntity, getHostService(), mProxyManager.getProxy(), new DownloadStatusListener() {
 
         @Override
         public void onProgress(DownloadProgressUpdateEvent event) {
@@ -150,6 +152,33 @@ public class DownloadManager {
       download.setFuture(mPool.submit(download.getTask()));
     }
     return DownloadStatusCode.INITIALIZED;
+  }
+
+  private HostService getHostService() {mDiscoveryClient.getInstances("HOSTSERVICE");
+    return null;
+    //  createFeignClient(HostService.class, "http://host-service");
+
+    //      if (null == cookie || cookie.isEmpty()) {
+
+    // mDiscoveryClient.getInstancesById("HOSTSERVICE").stream().map(s -> ).collect(Collectors.toList());
+
+    //Set<String> services = mServiceRegistry.getServices(HostService.class);
+    //LOGGER.debug("Available HostServices services={}", services);
+    //services.remove("Default");
+    //
+    //HandleRequest handleRequest = new HandleRequest(url);
+    //LoginRequest loginRequest = new LoginRequest(url, "", "");
+    //
+    //for (Iterator iterator = services.iterator(); iterator.hasNext();) {
+    //  String service = (String) iterator.next();
+    //  HostService hostService = mServiceRegistry.getService(service);
+    //  if (null != hostService && hostService.canHandle(handleRequest)) {
+    //    LoginResult loginResult = hostService.login(loginRequest);
+    //    cookie = loginResult.getCookie();
+    //    break;
+    //  }
+    //}
+    //      }    return null;
   }
 
   /**

@@ -10,17 +10,21 @@ import org.springframework.stereotype.Component;
 public class ProxyManager {
 
   private String mProvider;
-  
+//  @Autowired
+//  private DiscoveryClient mDiscoveryClient;
 
   public Proxy getProxy() {
+    
+//    mDiscoveryClient.getInstancesById("PROXY_PROVIDER");
+    
     return null;
-//    ProxyProviderService service = mServiceRegistry.getService(mProxyConfig.getProvider());
-//    
-//    ProxyRequest request = new ProxyRequest();
-//    request.addProxyRequirement(new BandwidthProxyRequirement(10));
-//    ProxyResult result = service.next(request);
-//        
-//    return result.getProxies().get(0);
+    //    ProxyProviderService service = mServiceRegistry.getService(mProxyConfig.getProvider());
+    //    
+    //    ProxyRequest request = new ProxyRequest();
+    //    request.addProxyRequirement(new BandwidthProxyRequirement(10));
+    //    ProxyResult result = service.next(request);
+    //        
+    //    return result.getProxies().get(0);
   }
 
 }

@@ -75,25 +75,6 @@ public class DownloadController {
     RequestResult ret;
 
     try {
-//      //      if (null == cookie || cookie.isEmpty()) {
-//      Set<String> services = mServiceRegistry.getServices(HostService.class);
-//      LOGGER.debug("Available HostServices services={}", services);
-//      services.remove("Default");
-//
-//      HandleRequest handleRequest = new HandleRequest(url);
-//      LoginRequest loginRequest = new LoginRequest(url, "", "");
-//
-//      for (Iterator iterator = services.iterator(); iterator.hasNext();) {
-//        String service = (String) iterator.next();
-//        HostService hostService = mServiceRegistry.getService(service);
-//        if (null != hostService && hostService.canHandle(handleRequest)) {
-//          LoginResult loginResult = hostService.login(loginRequest);
-//          cookie = loginResult.getCookie();
-//          break;
-//        }
-//      }
-      //      }
-
       // Initiating the download using the DownloadManager.
       ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie), DownloadStatusCode.OK);
     } catch (

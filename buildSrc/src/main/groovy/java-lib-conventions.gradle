@@ -15,7 +15,7 @@
  */
 plugins {
     id 'java-library'
-        id 'eclipse'
+    id 'eclipse'
 }
 
 repositories {
@@ -57,5 +57,3 @@ java {
         languageVersion = JavaLanguageVersion.of(20)
     }
 }
-
-

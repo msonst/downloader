@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-	id 'java-lib-conventions'
+package com.cs.download.server.api.host;
 
-	//id 'org.springframework.boot'
-	//id 'io.spring.dependency-management'
-	
+/**
+ * Enumeration representing the different states of a service.
+ */
+public enum LifecycleState {
+
+  /**
+   * The service is stopped.
+   */
+  STOPPED,
+
+  /**
+   * The service is running.
+   */
+  RUNNING,
+
+  /**
+   * The service encountered an error.
+   */
+  ERROR, 
+  
+  READY
 }
-
-description = 'Resuming file download-server with REST interface.'
-
-dependencies {	
-	//implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-}
-/*
-bootJar {
-  //archiveFileName = "${project.name}-${project.version}.jar"
-  launchScript()
-}
-
-jar{
-    archiveClassifier=''
-    //enabled = false
-}*/

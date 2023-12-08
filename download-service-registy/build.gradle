@@ -14,7 +14,29 @@
  * limitations under the License.
  */
 plugins {
-	id 'org.springframework.boot'
+	id 'java-lib-conventions'
+	//id 'org.springframework.boot'
+	//id 'io.spring.dependency-management'
+	
+}
+
+apply from: file("${rootDir}/buildSrc/publishing.gradle")
+
+description = 'Resuming file download-server with REST interface.'
+
+dependencies {	
+    implementation platform(project(":download-microservice"))
+    //testImplementation project(":download-microservice")
+
+    implementation 'commons-io:commons-io:2.15.1'
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+	
+}
+/*
+ 
+plugins {
+	id 'java-lib-conventions'
+//	id 'org.springframework.boot'
 	//id 'io.spring.dependency-management'
 	
 }
@@ -22,10 +44,10 @@ plugins {
 description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
-	    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:${springcloudversion}"
-
-}
-
+	    //implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:${springcloudversion}"
+	 implementation project(":download-microservice")
+}*/
+/*
 bootJar {
   //archiveFileName = "${project.name}-${project.version}.jar"
   launchScript()
@@ -35,3 +57,42 @@ jar{
     archiveClassifier=''
     //enabled = false
 }
+plugins {
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'	
+	id 'java-library'
+	id 'eclipse'
+}
+
+/*javaPlatform {
+    allowDependencies()
+}
+
+repositories {
+	maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+    //constraints 
+	{
+        api project(":download-platform")
+
+	    api 'org.postgresql:postgresql:42.6.0'
+
+	   	api "org.springframework.boot:spring-boot-starter-web"
+	    api "org.springframework.boot:spring-boot-starter-data-jpa"
+		api "org.springframework.boot:spring-boot-starter-thymeleaf" 	    
+		api "org.springframework.boot:spring-boot-starter-actuator"		
+		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
+		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"		
+		api "org.springframework.cloud:spring-cloud-starter-openfeign"
+	} 
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springcloudversion}"
+		mavenBom "org.springframework.boot:spring-boot-dependencies:${springbootversion}"
+	}
+}
+*/

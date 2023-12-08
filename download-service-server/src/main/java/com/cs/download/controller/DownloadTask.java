@@ -23,10 +23,16 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 
 import com.cs.download.entity.DownloadEntity;
 import com.cs.download.event.DownloadStatusListener;
 import com.cs.download.server.api.DownloadStatusCode;
+import com.cs.download.server.api.host.HostService;
+
+import feign.Feign;
+import feign.Request;
+import feign.Retryer;
 
 /**
  * The {@code DownloadTask} class represents a task for downloading a file from a given URL using multiple threads.
@@ -46,12 +52,22 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
   private final Proxy mProxy;
   private DownloadEntity mDownload;
 
-  public DownloadTask(DownloadEntity downloadEntity, Proxy proxy, DownloadStatusListener downloadStatusListener) {
+  private HostService mHostService;
+
+  public DownloadTask(DownloadEntity downloadEntity, HostService hostService, Proxy proxy, DownloadStatusListener downloadStatusListener) {
     mDownload = downloadEntity;
+    mHostService = hostService;
     mProxy = new Proxy(proxy.type(), proxy.address());
     mDownloadStatusListener = downloadStatusListener;
   }
-
+  
+  @Bean
+  private <T> T createFeignClient(Class<T> feignClientInterface, String url) {
+    return Feign.builder()
+            .options(new Request.Options(5000, 5000))
+            .retryer(new Retryer.Default())
+            .target(feignClientInterface, url);
+}
   /**
    * Executes the download task.
    *

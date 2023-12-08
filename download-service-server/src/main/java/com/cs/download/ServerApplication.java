@@ -15,19 +15,10 @@
  */
 package com.cs.download;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Main application class for starting the file downloader application.
@@ -36,10 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
  * entry point for the Spring Boot application and includes the configuration, component scanning,
  * and auto-configuration for the application.
  */
-@EnableDiscoveryClient
+// watch for Consider defining a bean of type 'com.netflix.discovery.DiscoveryClient' in your configuration.
+// this requires com.netflix.discovery.discoveryclient!!!!!!
 @EntityScan(basePackages = "com.cs.download.entity")
 @EnableJpaRepositories(basePackages = "com.cs.download.repository")
-@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = { "com.cs.download" }, exclude = {
+    org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class })
 public class ServerApplication {
   /**
    * Main method to launch the Spring Boot application.
@@ -51,15 +44,3 @@ public class ServerApplication {
   }
 }
 
-@RestController
-class ServiceInstanceRestController {
-
-  @Autowired
-  private DiscoveryClient discoveryClient;
-
-  @RequestMapping("/service-instances/{applicationName}")
-  public List<ServiceInstance> serviceInstancesByApplicationName(
-      @PathVariable String applicationName) {
-    return this.discoveryClient.getInstances(applicationName);
-  }
-}
