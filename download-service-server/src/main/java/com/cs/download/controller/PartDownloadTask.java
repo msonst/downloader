@@ -47,10 +47,10 @@ class PartDownloadTask implements Callable<TaskResult> {
   private final long mEndRange;
   private final int mId;
   private final String mCookie;
-  private final Proxy mProxy;
   private final ResumableDownload mDownloader;
   private long mAdjustedStartRange;
   private long mFileSzAtStart;
+  private ProxyResolver mProxyResolver;
 
   /**
    * Creates a new download task.
@@ -62,18 +62,18 @@ class PartDownloadTask implements Callable<TaskResult> {
    * @param endRange     The end range for the download.
    * @param id           The unique identifier of the task.
    * @param cookie       The cookie for authentication (if required).
-   * @param proxy        The proxy for the connection (if required).
+   * @param proxyResolver        The proxy for the connection (if required).
    */
   public PartDownloadTask(final ResumableDownload downloader, final URL url, String saveFileName, long startRange, long endRange, int id,
-      String cookie, Proxy proxy) {
+      String cookie, ProxyResolver proxyResolver) {
     mDownloader = downloader;
     mUrl = url;
     mPartName = saveFileName;
+    mProxyResolver = proxyResolver;
     mAdjustedStartRange = mStartRange = startRange;
     mEndRange = endRange;
     mId = id;
     mCookie = cookie;
-    mProxy = proxy;
 
     LOGGER.debug("New task {} ", toString());
   }
@@ -81,7 +81,7 @@ class PartDownloadTask implements Callable<TaskResult> {
   @Override
   public String toString() {
     return "DownloadTask [threadId=" + mId + ", adjustedStartRange=" + mAdjustedStartRange + ", endRange=" + mEndRange + ", partName=" + mPartName
-        + ", url=" + mUrl + ", cookie=" + mCookie + ", proxy=" + mProxy + "]";
+        + ", url=" + mUrl + ", cookie=" + mCookie + "]";
   }
 
   @Override
@@ -90,6 +90,8 @@ class PartDownloadTask implements Callable<TaskResult> {
     DownloadStatusCode responseCode = DownloadStatusCode.ERROR;
     InputStream inputStream = null;
 
+    Proxy proxy = mProxyResolver.get();
+    
     LOGGER.debug("Called {} (adjusted) start {} end {}", mId, mAdjustedStartRange, mEndRange);
 
     for (int retry = 0; retry < MAX_RETRY_ATTEMPTS; retry++) {
@@ -110,7 +112,7 @@ class PartDownloadTask implements Callable<TaskResult> {
       LOGGER.debug("Init connection {}", mId);
 
       try {
-        HttpURLConnection connection = (HttpURLConnection) ((null != mProxy) ? mUrl.openConnection(mProxy) : mUrl.openConnection());
+        HttpURLConnection connection = (HttpURLConnection) ((null != proxy) ? mUrl.openConnection(proxy) : mUrl.openConnection());
         connection.setRequestProperty("Range", "bytes=" + mAdjustedStartRange + "-" + mEndRange);
         connection.setRequestProperty("Cookie", mCookie);
 

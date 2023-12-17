@@ -48,19 +48,18 @@ public class ResumableDownload {
   private static final Logger LOGGER = LoggerFactory.getLogger(ResumableDownload.class);
   private final DownloadStatusListener mListener;
   private final int mNumThreads;
-  private Proxy mProxy = null;
+  private ProxyResolver mProxyResolver;
 
   /**
    * Constructs a new ResumableDownload instance.
    *
    * @param numThreads The number of threads to use for parallel downloading.
-   * @param proxy      The proxy to be used for the connection.
+   * @param proxyResolver      The proxy to be used for the connection.
    * @param listener   The listener to receive download status updates.
    */
-  public ResumableDownload(final int numThreads, final Proxy proxy, final DownloadStatusListener listener) {
+  public ResumableDownload(final int numThreads, final ProxyResolver proxyResolver, final DownloadStatusListener listener) {
     mNumThreads = numThreads;
-    if (null != proxy)
-      mProxy = new Proxy(proxy.type(), proxy.address());
+    mProxyResolver = proxyResolver;
     mListener = listener;
   }
 
@@ -82,13 +81,15 @@ public class ResumableDownload {
     DownloadStatusCode responseCode = DownloadStatusCode.ERROR;
     long fileSize = -1;
 
-    LOGGER.info("Starting fileUrl={}, saveFileName={}, numThreads={}, cookie={}, proxy={}", url, saveFileName, mNumThreads, cookie, mProxy);
+    Proxy proxy = mProxyResolver.get();
+    
+    LOGGER.info("Starting fileUrl={}, saveFileName={}, numThreads={}, cookie={}, proxy={}", url, saveFileName, mNumThreads, cookie, proxy);
     
     CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.INITIALIZED)));
         
     for (int i = 0; (i < 5) && (fileSize < 0); i++) {
 
-      HttpURLConnection connection = (HttpURLConnection) ((null != mProxy) ? url.openConnection(mProxy) : url.openConnection());
+      HttpURLConnection connection = (HttpURLConnection) ((null != proxy) ? url.openConnection(proxy) : url.openConnection());
       if (null == connection)
         return DownloadStatusCode.ERROR;
 
@@ -139,7 +140,7 @@ public class ResumableDownload {
       long startRange = i * chunkSize;
       long endRange = (i == mNumThreads - 1) ? fileSize - 1 : (i + 1) * chunkSize - 1;
 
-      running.add(pool.submit(new PartDownloadTask(this, url, saveFileName + "." + i, startRange, endRange, i, cookie, mProxy)));
+      running.add(pool.submit(new PartDownloadTask(this, url, saveFileName + "." + i, startRange, endRange, i, cookie, mProxyResolver)));
     }
     CompletableFuture.runAsync(() -> mListener.onProgress(new DownloadProgressUpdateEvent(this, DownloadStatusCode.DOWNLOADING)));
 

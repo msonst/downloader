@@ -15,12 +15,24 @@
  */
 plugins {
 	id 'java-lib-conventions'
-	//id 'io.spring.dependency-management'
-	
+  id "org.openapi.generator" 
+
 }
 
 description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
-	
+    implementation platform(project(":download-microservice"))
+}
+
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set("$rootDir/download-service-server-api/spec/download-api-v1.0.yaml")
+    outputDir.set("$rootDir/download-service-server-api/")
+    apiPackage.set("com.cs.download.server.api")
+    invokerPackage.set("org.openapi.example.invoker")
+    modelPackage.set("com.cs.download.server.api.model")
+    configOptions.set([
+        dateLibrary: "java8"
+    ])
 }

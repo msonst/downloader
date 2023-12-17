@@ -15,17 +15,32 @@
  */
 plugins {
 	id 'java-lib-conventions'
-
 	//id 'org.springframework.boot'
 	//id 'io.spring.dependency-management'
 	
 }
 
+apply from: file("${rootDir}/buildSrc/publishing.gradle")
+
 description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
-	//implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
+    implementation platform(project(":download-microservice"))
+    implementation project(":download-service-server-api")
+    implementation project(":download-utils")
+
+    //testImplementation project(":download-microservice")
+
+    implementation 'commons-io:commons-io:2.15.1'
+	
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+	implementation 'com.github.docker-java:docker-java:3.3.4'
+    implementation 'com.github.docker-java:docker-java-transport-httpclient5:3.3.4'
+    implementation 'org.apache.sshd:sshd-core:2.11.0'
+    implementation 'com.jcraft:jsch:0.1.55'
+	
 }
+
 /*
 bootJar {
   //archiveFileName = "${project.name}-${project.version}.jar"
@@ -35,4 +50,6 @@ bootJar {
 jar{
     archiveClassifier=''
     //enabled = false
-}*/
+}
+
+*/

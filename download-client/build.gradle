@@ -21,16 +21,17 @@ plugins {
 description='(Demo) File download-client.'
 
 dependencies {	
-    implementation project(":download-service-server-api")
+    api project(":download-platform")
+    api project(":download-service-server-api")
 
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.21.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.21.1'
-	
+	//implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
+	//implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.21.1'
+	//implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.21.1'
+	runtimeOnly 'org.slf4j:slf4j-simple:1.7.32'
 	implementation "io.rest-assured:rest-assured:${restassuredversion}"
 	implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
 
 application {
-	mainClassName   = 'com.cs.download.client.Application' 
+	mainClassName   = 'com.cs.download.client.ClientApplication' 
 }

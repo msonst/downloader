@@ -49,25 +49,19 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
   private static final Logger LOGGER = LoggerFactory.getLogger(DownloadTask.class);
 
   private final DownloadStatusListener mDownloadStatusListener;
-  private final Proxy mProxy;
   private DownloadEntity mDownload;
 
-  private HostService mHostService;
+  private int mThreadCount;
 
-  public DownloadTask(DownloadEntity downloadEntity, HostService hostService, Proxy proxy, DownloadStatusListener downloadStatusListener) {
+  private ProxyResolver mProxyResolver;
+
+  public DownloadTask(DownloadEntity downloadEntity, ProxyResolver proxyResolver, int threadCount, DownloadStatusListener downloadStatusListener) {
     mDownload = downloadEntity;
-    mHostService = hostService;
-    mProxy = new Proxy(proxy.type(), proxy.address());
+    mProxyResolver = proxyResolver;
+    mThreadCount = threadCount;
     mDownloadStatusListener = downloadStatusListener;
   }
-  
-  @Bean
-  private <T> T createFeignClient(Class<T> feignClientInterface, String url) {
-    return Feign.builder()
-            .options(new Request.Options(5000, 5000))
-            .retryer(new Retryer.Default())
-            .target(feignClientInterface, url);
-}
+
   /**
    * Executes the download task.
    *
@@ -78,7 +72,7 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
   public DownloadStatusCode call() throws Exception {
     LOGGER.debug("Started {}", this);
 
-    ResumableDownload download = new ResumableDownload(mDownload.getThreadCount(), mProxy, mDownloadStatusListener);
+    ResumableDownload download = new ResumableDownload(mThreadCount, mProxyResolver, mDownloadStatusListener);
 
     try {
       URL url = new URL(mDownload.getUrl());
@@ -99,12 +93,12 @@ public class DownloadTask implements Callable<DownloadStatusCode> {
     return "DownloadTask [mDownload=" + mDownload + "]";
   }
 
-//  /**
-//   * Gets the URL of the file to be downloaded.
-//   *
-//   * @return The URL of the file to be downloaded.
-//   */
-//  public URL getUrl() {
-//    return new URL(mDownload.getUrl());
-//  }
+  //  /**
+  //   * Gets the URL of the file to be downloaded.
+  //   *
+  //   * @return The URL of the file to be downloaded.
+  //   */
+  //  public URL getUrl() {
+  //    return new URL(mDownload.getUrl());
+  //  }
 }

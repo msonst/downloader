@@ -42,6 +42,7 @@ subprojects {
 	   	apply from: file("${rootDir}/buildSrc/versions.gradle")
 	   
 
+    
  
 //    dependencyManagement {
 //        applyMavenExclusions = false

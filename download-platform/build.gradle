@@ -1,23 +1,21 @@
 plugins {
-	id 'java-library'
-    //id 'java'
+    id 'java-library'
+
 	id 'eclipse'
 }
-/*javaPlatform {
-    allowDependencies()
-}*/
-	dependencies {    
-		//constraints 
-		{
-implementation 'org.javassist:javassist:3.29.2-GA'
 
-        api "org.slf4j:slf4j-api:2.0.9"	    
-        
-		testImplementation "org.junit.platform:junit-platform-launcher:1.10.1"
 
-		testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitjupiterversion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitjupiterversion}"
-        testImplementation "org.mockito:mockito-core:5.7.0"		
-    }}
+dependencies {    
+    implementation 'org.javassist:javassist:3.29.2-GA'
+
+    api "org.slf4j:slf4j-api:2.0.9"	    
+    api "com.fasterxml.jackson.core:jackson-databind:2.15.2"
     
+	api "org.junit.platform:junit-platform-launcher:1.10.1"
+	api 'org.seleniumhq.selenium:selenium-java:4.15.0'
+
+	testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitjupiterversion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitjupiterversion}"
+    testImplementation "org.mockito:mockito-core:5.7.0"		
+}

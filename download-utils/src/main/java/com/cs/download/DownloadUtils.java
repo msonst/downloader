@@ -15,6 +15,7 @@
  */
 package com.cs.download;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -63,7 +64,7 @@ public class DownloadUtils {
     return null;
   }
 
-  public static int getFreePort() throws Exception {
+  public static int getFreePort() throws IOException {
     try (ServerSocket s = new ServerSocket()) {
       s.setReuseAddress(true);
       s.bind(new InetSocketAddress((InetAddress) null, 0));

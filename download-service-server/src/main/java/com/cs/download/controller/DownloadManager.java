@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cs.download.entity.DownloadEntity;
 import com.cs.download.event.DownloadProgressUpdateEvent;
@@ -42,6 +43,8 @@ import com.cs.download.event.DownloadStatusListener;
 import com.cs.download.event.PartProgressUpdateEvent;
 import com.cs.download.server.api.DownloadStatusCode;
 import com.cs.download.server.api.host.HostService;
+import com.cs.download.server.api.proxy.ProxyRequest;
+import com.cs.download.server.api.proxy.ProxyResult;
 import com.cs.download.service.DownloadEntityService;
 
 /**
@@ -92,10 +95,10 @@ public class DownloadManager {
    * @return The {@link Long} id.
    * @throws URISyntaxException 
    */
-  public Long addDownload(final URL url, String cookie) throws URISyntaxException {
+  public Long addDownload(final String url, String cookie) throws URISyntaxException {
     Long ret = null;
 
-    List<DownloadEntity> downloads = mDownloadEntityService.findByUrl(url.getPath());
+    List<DownloadEntity> downloads = mDownloadEntityService.findByUrl(url);
 
     if (!downloads.isEmpty()) {
       ret = downloads.get(0).getId();
@@ -103,13 +106,13 @@ public class DownloadManager {
       return ret;
     }
 
-    String fileName = FilenameUtils.getName(url.getPath());
+    String fileName = FilenameUtils.getName(url);
     if (fileName.isEmpty())
-      fileName = url.getPath().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+      fileName = url.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
 
     String filePath = Paths.get(mSavePath, fileName).toString();
 
-    DownloadEntity downloadEntity = new DownloadEntity(url.getPath(), cookie, mConfig.getThreadsPerDownload(), filePath,
+    DownloadEntity downloadEntity = new DownloadEntity(url, cookie, filePath,
         DownloadStatusCode.INITIALIZED.getResponseCode());
     ret = mDownloadEntityService.saveEntity(downloadEntity);
 
@@ -134,7 +137,7 @@ public class DownloadManager {
     //    Download download = mDownloads.get(d);
 
     if (null != downloadEntity) {
-      DownloadTask downloadTask = new DownloadTask(downloadEntity, getHostService(), mProxyManager.getProxy(), new DownloadStatusListener() {
+      DownloadTask downloadTask = new DownloadTask(downloadEntity, mProxyManager.getProxy(), mConfig.getThreadsPerDownload(), new DownloadStatusListener() {
 
         @Override
         public void onProgress(DownloadProgressUpdateEvent event) {
@@ -154,7 +157,9 @@ public class DownloadManager {
     return DownloadStatusCode.INITIALIZED;
   }
 
-  private HostService getHostService() {mDiscoveryClient.getInstances("HOSTSERVICE");
+  private HostService getHostService() {
+    //    LOGGER.debug("HostService" +mDiscoveryClient.getInstances("HOSTSERVICE"));
+ 
     return null;
     //  createFeignClient(HostService.class, "http://host-service");
 

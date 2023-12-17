@@ -10,7 +10,7 @@ download:
   outpath: "./data"
   persistfile: "./dl.json"
   paralleldownloads: 10
-  downloadthreads: 1
+  ThreadsPerDownload: 1
 
 proxy:
   provider: "Tor"   

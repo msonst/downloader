@@ -14,7 +14,6 @@ public class DownloadEntity {
   private Long id;
   private String url;
   private String cookie;
-  private int threadCount;
   private String filePath;
   private int status;
 
@@ -22,10 +21,9 @@ public class DownloadEntity {
 
   }
 
-  public DownloadEntity(String url, String cookie, int threadCount, String filePath, int status) {
+  public DownloadEntity(String url, String cookie, String filePath, int status) {
     this.url = url;
     this.cookie = cookie;
-    this.threadCount = threadCount;
     this.filePath = filePath;
     this.status = status;
   }
@@ -54,14 +52,6 @@ public class DownloadEntity {
     this.cookie = cookie;
   }
 
-  public int getThreadCount() {
-    return threadCount;
-  }
-
-  public void setThreadCount(int threadCount) {
-    this.threadCount = threadCount;
-  }
-
   public String getFilePath() {
     return filePath;
   }
@@ -80,7 +70,7 @@ public class DownloadEntity {
 
   @Override
   public String toString() {
-    return "DownloadEntity [mId=" + id + ", mUrl=" + url + ", mCookie=" + cookie + ", mThreadCount=" + threadCount + ", mFilePath=" + filePath
+    return "DownloadEntity [mId=" + id + ", mUrl=" + url + ", mCookie=" + cookie + ", mFilePath=" + filePath
         + ", mStatus=" + status + "]";
   }
 

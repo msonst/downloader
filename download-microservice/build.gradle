@@ -25,7 +25,8 @@ dependencies {
 	api platform("org.springframework.cloud:spring-cloud-dependencies:${springcloudversion}")
 	api platform("org.springframework.boot:spring-boot-dependencies:${springbootversion}")
 	
-        api project(":download-platform")
+            api project(':download-platform')
+        
 
 	    api 'org.postgresql:postgresql:42.6.0'
 //api 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
@@ -39,6 +40,7 @@ dependencies {
 		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
 		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"		
 		api "org.springframework.cloud:spring-cloud-starter-openfeign"
+		api "org.springframework.boot:spring-boot-starter-webflux"
 	} 
 }
 

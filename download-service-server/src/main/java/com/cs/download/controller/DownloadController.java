@@ -76,7 +76,7 @@ public class DownloadController {
 
     try {
       // Initiating the download using the DownloadManager.
-      ret = new RequestResult(mDownloadManager.addDownload(new URL(url.trim().replace("\"", "")), cookie), DownloadStatusCode.OK);
+      ret = new RequestResult(mDownloadManager.addDownload(url.trim().replace("\"", ""), cookie), DownloadStatusCode.OK);
     } catch (
 
     Exception e) {

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 plugins {
-	id 'java-library'	
+	id 'java-lib-conventions'
 }
 
 description = 'Utilities for downloading.'
-mainClass='com.cs.download.Application'
+
 dependencies {
-	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+            implementation project(':download-platform')
+
 }
 

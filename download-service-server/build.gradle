@@ -26,6 +26,7 @@ description = 'Resuming file download-server with REST interface.'
 
 dependencies {	
     implementation platform(project(":download-microservice"))
+    implementation project(":download-service-server-api")
     //testImplementation project(":download-microservice")
 
     implementation 'commons-io:commons-io:2.15.1'
