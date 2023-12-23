@@ -31,12 +31,6 @@ dependencies {
     implementation "io.spring.gradle:dependency-management-plugin:${springdependencymanagementpluginversion}"
     implementation "org.openapitools:openapi-generator-gradle-plugin:6.6.0"
     
-   /* implementation "com.github.ben-manes:gradle-versions-plugin:0.46.0"
-    implementation "com.palantir.gradle.docker:gradle-docker:0.35.0"
-    
-    implementation 'org.barfuin.gradle.taskinfo:gradle-taskinfo:2.1.0'
-	implementation "io.swagger.core.v3:swagger-gradle-plugin:2.2.19"
+    implementation "com.palantir.gradle.docker:gradle-docker:0.35.0"    
 
-    testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
-    testImplementation "org.spockframework:spock-core"*/
 }

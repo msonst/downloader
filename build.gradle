@@ -1,64 +1,31 @@
 plugins {
-    id 'java'
+  id 'java'
 }
-/*
-apply from: file("${rootDir}/buildSrc/versions.gradle")
-
-dependencies {
-    constraints {
-	    api 'org.postgresql:postgresql:42.6.0'
-	
-		api "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${springcloudversion}"
-		api "org.springframework.cloud:spring-cloud-starter-openfeign:${springcloudversion}"
-	   	api "org.springframework.boot:spring-boot-starter-web:${springbootversion}"
-	    api "org.springframework.boot:spring-boot-starter-data-jpa:${springbootversion}"
-		api "org.springframework.boot:spring-boot-starter-thymeleaf:${springbootversion}"
-		
-		testImplementation "org.junit.jupiter:junit-jupiter:${junitjupiterversion}"
-		testImplementation "org.junit.api:junit-api-launcher"
-	    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
-	    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.1"
-	    testImplementation "org.mockito:mockito-core:5.7.0"
-		testImplementation "org.springframework.boot:spring-boot-starter-test:${springbootversion}"	
-		testImplementation "io.rest-assured:rest-assured:${restassuredversion}"
-		 
-	} 
-}
-*/ 
 
 subprojects {
-	
-	repositories {
-     mavenCentral()    
-	    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
-	    
- 
-	}
-	
-	group = "com.corporate-startup"
-	version = '2.0.0'
 
-	apply from: file("${rootDir}/buildSrc/versions.gradle")
-	   	apply from: file("${rootDir}/buildSrc/versions.gradle")
-	   
+  repositories {
+    mavenCentral()
+    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+  }
 
-    
- 
-//    dependencyManagement {
-//        applyMavenExclusions = false
-//    } 
+  group = "com.corporate-startup"
+  version = '2.0.0'
 
-	jar {    
+  apply from: file("${rootDir}/buildSrc/versions.gradle")
+  apply from: file("${rootDir}/buildSrc/docker.gradle")
+  
+  jar {
 
-	    manifest {
-	        attributes(
-	                "Class-Path": "com.cs.download",
-	                "Implementation-Title": project.name,
-	                "Implementation-Version": version,
-	                "Implementation-Vendor": "Michael Sonst",
-	                "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
-	                "Gradle-Version": GradleVersion.current().toString()
-	        )
-	    }
-	}    
+    manifest {
+      attributes(
+          "Class-Path": "com.cs.download",
+          "Implementation-Title": project.name,
+          "Implementation-Version": version,
+          "Implementation-Vendor": "Michael Sonst",
+          "Build-Jdk": org.gradle.internal.jvm.Jvm.current(),
+          "Gradle-Version": GradleVersion.current().toString()
+          )
+    }
+  }
 }

@@ -1,0 +1,16 @@
+FROM @BASE_IMAGE_NAME@:@BASE_IMAGE_TAG@
+
+#COPY entrypoint.sh ./
+
+ADD @PROJECT_NAME@-@VERSION@.tar ./
+#RUN chmod 0755 /@PROJECT_NAME@-@VERSION@/@PROJECT_NAME@ 
+
+VOLUME ["/volume"]
+
+#RUN chmod 0755 entrypoint.sh 
+#ENTRYPOINT ["./entrypoint.sh"] 
+
+#RUN addgroup -S app && adduser -S app -G app
+#USER app
+
+CMD /@PROJECT_NAME@-@VERSION@/bin/@PROJECT_NAME@

@@ -19,6 +19,7 @@ import io.restassured.RestAssured;
 public class ClientApplication {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientApplication.class);
+  
   private static HelpFormatter formatter;
   private static String mHeader;
   private Options mOptions;
@@ -125,12 +126,12 @@ public class ClientApplication {
 
         if (null != result) {
 
-          if (result.status().isOK()) {
+          if (result.getStatus().isOK()) {
 
-            downloadid = result.downloadId();//STORE ID  
-            LOGGER.debug("ID {}, result={}", downloadid, result.status());
+            downloadid = result.getDownloadId();//STORE ID  
+            LOGGER.debug("ID {}, result={}", downloadid, result.getStatus());
           }
-          System.out.println("ID " + downloadid + " result=" + result.status());
+          System.out.println("ID " + downloadid + " result=" + result.getStatus());
         }
       }
     } catch (Exception e) {

@@ -9,3 +9,4 @@ download-server/plugin/**.jar
 /build/
 download-server/data/10mb.txt
 download-plugin-4kvod/
+download-client/.settings/org.eclipse.jdt.core.prefs

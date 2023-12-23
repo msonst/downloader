@@ -1,0 +1,50 @@
+server:
+  port: 9091
+
+logging:
+  level:
+    org.springframework: INFO
+    com.cs: DEBUG
+
+download:
+  outpath: "./data"
+  persistfile: "./dl.json"
+  paralleldownloads: 10
+  ThreadsPerDownload: 1
+
+proxylist:
+  minmbits: 5
+  proxies:
+  -
+    host: 192.168.0.100
+    privoxyport: 8118
+
+spring:
+  application:
+    name: dl
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:h2:file:./volume/dbdownload;INIT=RUNSCRIPT FROM 'classpath:initDB.sql';DB_CLOSE_DELAY=-1; #jdbc:h2:mem:dbdownload
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console.enabled: true
+
+grafana:
+#  otlp:
+#    cloud:
+#      zone: <Grafana Zone>
+#      instanceId: <Grafana Instance ID>
+#      apiKey: <Grafana API key>
+  otlp:
+    onprem:
+      endpoint: http://127.0.0.1:12345
+      protocol: grpc
+      
+springdoc:
+  api-docs:
+    path: "/api-docs"

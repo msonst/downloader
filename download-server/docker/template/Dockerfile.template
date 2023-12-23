@@ -1,0 +1,18 @@
+FROM @BASE_IMAGE_NAME@:@BASE_IMAGE_TAG@
+
+#COPY entrypoint.sh ./
+
+ADD @PROJECT_NAME@-@VERSION@.tar ./
+COPY config ./@PROJECT_NAME@-@VERSION@/lib/config
+
+VOLUME ["/volume"]
+
+#RUN chmod 0755 entrypoint.sh 
+#ENTRYPOINT ["./entrypoint.sh"] 
+
+#RUN addgroup -S app && adduser -S app -G app
+#USER app
+
+EXPOSE 9091
+
+CMD /@PROJECT_NAME@-@VERSION@/bin/@PROJECT_NAME@
